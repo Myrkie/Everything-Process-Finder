@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 using System.Security.Principal;
 using Microsoft.Win32;
 using Serilog;
@@ -8,8 +9,9 @@ namespace Everything_Process_Finder.Misc;
 public static class Utils
 {
     private static readonly ILogger Logger = Log.ForContext(typeof(TrayIcon));
-
-    public const string AppName = "Everything Process Finder";
+    private const string AppName = "Everything Process Finder";
+    
+    public static NotifyIcon? NotifyIcon;
 
     internal static void AutoStartup()
     {
@@ -56,7 +58,25 @@ public static class Utils
         Process.Start(new ProcessStartInfo(uri) { UseShellExecute = true });
         Logger.Information("Everything window focused.");
     }
-        
+
+    public static void LoadResources()
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        foreach (var resource in assembly.GetManifestResourceNames())
+        {
+            Logger.Information("Discovered Resources: {res}", resource);
+        }
+        var iconResource = assembly.GetManifestResourceStream("Everything_Process_Finder.res.Icon.ico");
+        if (iconResource == null)
+            throw new Exception("Couldn't find embedded resource");
+        using var icon = new Icon(iconResource);
+        NotifyIcon = new NotifyIcon
+        {
+            Icon = icon,
+            Visible = true,
+            Text = AppName
+        };
+    }
     internal static void EnsureElevatedPrivileges()
     {
         var identity = WindowsIdentity.GetCurrent();

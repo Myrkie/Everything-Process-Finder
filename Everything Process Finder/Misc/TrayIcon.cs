@@ -19,33 +19,23 @@ namespace Everything_Process_Finder.Misc
 
         public void Build()
         {
-            _trayIcon = new NotifyIcon()
-            {
-                Icon = SystemIcons.Application,
-                Visible = true,
-                Text = Utils.AppName,
-            };
-            _trayIcon.DoubleClick += (_, _) =>
-            {
-                Utils.FocusEverything();
-            };
-            
+            _trayIcon = Utils.NotifyIcon;
+            if (_trayIcon == null) return;
+            _trayIcon.DoubleClick += (_, _) => { Utils.FocusEverything(); };
+
             // context menu
             var contextMenu = new ContextMenuStrip();
-            
+
             // connection status
             _connectionStatusItem = new ToolStripMenuItem("Connection Status")
             {
                 Image = CreateStatusIconImage(false),
                 CheckOnClick = false
             };
-            _connectionStatusItem.Click += (_, _) =>
-            {
-                Utils.FocusEverything();
-            };
-            contextMenu.Items.Add(_connectionStatusItem); 
-            
-            
+            _connectionStatusItem.Click += (_, _) => { Utils.FocusEverything(); };
+            contextMenu.Items.Add(_connectionStatusItem);
+
+
             // auto start
             _checkboxAutoStartMenuItem = new ToolStripMenuItem("Start with Windows");
             _checkboxAutoStartMenuItem.CheckOnClick = true;
@@ -55,8 +45,8 @@ namespace Everything_Process_Finder.Misc
                 Config.Instance.SaveConfig();
             };
             contextMenu.Items.Add(_checkboxAutoStartMenuItem);
-            
-            
+
+
             // show hide console option
             _checkboxShowConsoleMenuItem = new ToolStripMenuItem("Show Console");
             _checkboxShowConsoleMenuItem.CheckOnClick = true;
@@ -66,9 +56,9 @@ namespace Everything_Process_Finder.Misc
                 Logger.Information("showing window");
             };
             contextMenu.Items.Add(_checkboxShowConsoleMenuItem);
-            
+
             contextMenu.Items.Add("Exit", null, (_, _) => { Application.Exit(); });
-            
+
             _trayIcon.ContextMenuStrip = contextMenu;
         }
         

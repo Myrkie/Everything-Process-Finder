@@ -12,6 +12,12 @@ class Program
     [STAThread]
     static void Main()
     {
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Verbose()
+            .WriteTo.Console(
+                outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}",
+                theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Code)
+            .CreateLogger();
         // be nice to debugger
         if (!Console.IsOutputRedirected)
         {
@@ -19,13 +25,9 @@ class Program
         }
    
         Utils.SingleInstanceCheck();
-        
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Verbose()
-            .WriteTo.Console(
-                outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}",
-                theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Code)
-            .CreateLogger();
+
+        // Unused for now maybe used in the future
+        Utils.LoadResources();
         
         var trayIcon = new TrayIcon();
         trayIcon.Build();
