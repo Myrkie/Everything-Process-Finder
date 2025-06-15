@@ -12,6 +12,7 @@ public static class Utils
     private const string AppName = "Everything Process Finder";
     
     public static NotifyIcon? NotifyIcon;
+    public static Image? NotifyImage;
 
     internal static void AutoStartup()
     {
@@ -48,7 +49,7 @@ public static class Utils
         if (createdNew) return;
         var str = AppName + " is already running.";
         Logger.Information(str);
-        MessageBox.Show(str);
+        MessageBox.Show(str, AppName, MessageBoxButtons.OK, MessageBoxIcon.Information);
         Environment.Exit(0);
     }
     
@@ -66,16 +67,24 @@ public static class Utils
         {
             Logger.Information("Discovered Resources: {res}", resource);
         }
-        var iconResource = assembly.GetManifestResourceStream("Everything_Process_Finder.res.Icon.ico");
-        if (iconResource == null)
+        var imageStream = assembly.GetManifestResourceStream("Everything_Process_Finder.res.Icon.ico");
+        if (imageStream == null)
             throw new Exception("Couldn't find embedded resource");
-        using var icon = new Icon(iconResource);
+
+        NotifyImage = Image.FromStream(imageStream);
+        
+        // reset seek and reuse stream
+        imageStream.Seek(0, SeekOrigin.Begin);
+        
+        using var icon = new Icon(imageStream);
         NotifyIcon = new NotifyIcon
         {
             Icon = icon,
             Visible = true,
             Text = AppName
         };
+        
+        imageStream.Dispose();
     }
     internal static void EnsureElevatedPrivileges()
     {

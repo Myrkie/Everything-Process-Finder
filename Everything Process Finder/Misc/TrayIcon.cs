@@ -57,7 +57,7 @@ namespace Everything_Process_Finder.Misc
             };
             contextMenu.Items.Add(_checkboxShowConsoleMenuItem);
 
-            contextMenu.Items.Add("Exit", null, (_, _) => { Application.Exit(); });
+            contextMenu.Items.Add("Exit", Utils.NotifyImage, (_, _) => { Application.Exit(); });
 
             _trayIcon.ContextMenuStrip = contextMenu;
         }
