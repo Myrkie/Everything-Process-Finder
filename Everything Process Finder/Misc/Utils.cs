@@ -49,6 +49,13 @@ public static class Utils
         MessageBox.Show(str);
         Environment.Exit(0);
     }
+    
+    public static void FocusEverything()
+    {
+        string uri = "es:";
+        Process.Start(new ProcessStartInfo(uri) { UseShellExecute = true });
+        Logger.Information("Everything window focused.");
+    }
         
     internal static void EnsureElevatedPrivileges()
     {

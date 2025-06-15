@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Serilog;
+﻿using Serilog;
 
 namespace Everything_Process_Finder.Misc
 {
@@ -28,21 +27,25 @@ namespace Everything_Process_Finder.Misc
             };
             _trayIcon.DoubleClick += (_, _) =>
             {
-                string uri = "es:";
-                Process.Start(new ProcessStartInfo(uri) { UseShellExecute = true });
-                Logger.Information("Everything window focused.");
+                Utils.FocusEverything();
             };
+            
             // context menu
             var contextMenu = new ContextMenuStrip();
             
             // connection status
             _connectionStatusItem = new ToolStripMenuItem("Connection Status")
             {
-                Image = CreateStatusIconImage(false)
+                Image = CreateStatusIconImage(false),
+                CheckOnClick = false
             };
-            
-            
+            _connectionStatusItem.Click += (_, _) =>
+            {
+                Utils.FocusEverything();
+            };
             contextMenu.Items.Add(_connectionStatusItem); 
+            
+            
             // auto start
             _checkboxAutoStartMenuItem = new ToolStripMenuItem("Start with Windows");
             _checkboxAutoStartMenuItem.CheckOnClick = true;
