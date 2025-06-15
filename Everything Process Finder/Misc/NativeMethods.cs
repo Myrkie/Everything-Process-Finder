@@ -1,6 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
 using Serilog;
+// ReSharper disable IdentifierTypo
 
 namespace Everything_Process_Finder.Misc;
 

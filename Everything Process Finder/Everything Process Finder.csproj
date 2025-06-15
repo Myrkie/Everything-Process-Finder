@@ -9,6 +9,7 @@
         <PublishAot>true</PublishAot>
         <_SuppressWinFormsTrimError>true</_SuppressWinFormsTrimError>
         <Authors>Myrkur</Authors>
+        <Version>1.0.1</Version>
     </PropertyGroup>
 
 

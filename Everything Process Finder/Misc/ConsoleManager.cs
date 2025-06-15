@@ -48,12 +48,13 @@ namespace Everything_Process_Finder.Misc
 
         private static bool _consoleVisible;
 
-        public static void ToggleConsole()
+        public static void ToggleConsole(ToolStripMenuItem consoleMenuItem)
         {
             if (_consoleVisible)
             {
                 FreeConsoleWindow();
                 _consoleVisible = false;
+                consoleMenuItem.Checked = false;
             }
             else
             {
@@ -67,6 +68,7 @@ namespace Everything_Process_Finder.Misc
 
                 ShowConsole();
                 _consoleVisible = true;
+                consoleMenuItem.Checked = true;
             }
         }
 

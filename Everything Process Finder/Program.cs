@@ -8,11 +8,10 @@ namespace Everything_Process_Finder;
 class Program
 {
     private static readonly ILogger Logger = Log.ForContext(typeof(Program));
-    static IntPtr _lastEverythingHandle = IntPtr.Zero;
 
     [STAThread]
     static void Main()
-    { 
+    {
         // be nice to debugger
         if (!Console.IsOutputRedirected)
         {
@@ -47,8 +46,8 @@ class Program
             bool shiftPressed = (Control.ModifierKeys & Keys.Shift) == Keys.Shift;
             bool ctrlPressed = (Control.ModifierKeys & Keys.Control) == Keys.Control;
 
-            var procpath = NativeMethods.GetProcessPathByWindowHandle(handle);
-            var process = Path.GetFileNameWithoutExtension(procpath);
+            var processPathByWindowHandle = NativeMethods.GetProcessPathByWindowHandle(handle);
+            var process = Path.GetFileNameWithoutExtension(processPathByWindowHandle);
 
             Logger.Information($"Found window: Handle: {handle} Title: {title} Process: {process}", handle, title, process);
 
@@ -63,27 +62,27 @@ class Program
 
             switch (modifier)
             {
-                
-                case Structs.Modifier.Shift:{
-                    string? folder = Path.GetDirectoryName(procpath);
-                    targetPath = !string.IsNullOrEmpty(folder) ? folder : procpath;
+                case Structs.Modifier.Shift:
+                {
+                    string? folder = Path.GetDirectoryName(processPathByWindowHandle);
+                    targetPath = !string.IsNullOrEmpty(folder) ? folder : processPathByWindowHandle;
                     Logger.Information("Shift: searching by process folder.");
                     break; 
                 } 
 
                 case Structs.Modifier.Control:
                 {
-                    string? folder = Path.GetDirectoryName(procpath);
+                    string? folder = Path.GetDirectoryName(processPathByWindowHandle);
                     targetPath = !string.IsNullOrEmpty(folder)
                         ? (folder.EndsWith("\\") ? folder : folder + "\\")
-                        : procpath + "\\";
+                        : processPathByWindowHandle + "\\";
                     Logger.Information("Ctrl held: searching by folder path.");
                     break;
                 }
                 
                 case Structs.Modifier.None:
                 {
-                    targetPath = procpath;
+                    targetPath = processPathByWindowHandle;
                     Logger.Information("No modifiers: searching by process executable.");
                     break;
                 }
@@ -99,31 +98,19 @@ class Program
         };
         
         // Start polling for Void Tools Everything window
-        var timer = new System.Windows.Forms.Timer
+        MonitorEverythingWindow.EverythingWindowFound += (_, _) =>
         {
-            Interval = 1000 
+            trayIcon.SetConState(true);
+            _assemble(findButton.Handle);
         };
-        timer.Tick += (_, _) => MonitorEverythingWindow(findButton);
-        timer.Start();
-
+        MonitorEverythingWindow.EverythingWindowClosed += (_, _) =>
+        {
+            trayIcon.SetConState(false);
+        };
+        
+        MonitorEverythingWindow.Init();
+        
         Application.Run();
-    }
-
-    private static void MonitorEverythingWindow(Control button)
-    {
-        IntPtr currentHandle = NativeMethods.FindWindow("EVERYTHING", null);
-
-        if (currentHandle != IntPtr.Zero && currentHandle != _lastEverythingHandle)
-        {
-            _lastEverythingHandle = currentHandle;
-            Logger.Information("Everything window found. Reattaching button...");
-            _assemble(button.Handle);
-        }
-        else if (currentHandle == IntPtr.Zero && _lastEverythingHandle != IntPtr.Zero)
-        {
-            Logger.Information("Everything window closed.");
-            _lastEverythingHandle = IntPtr.Zero;
-        }
     }
 
     private static void _assemble(IntPtr handle)

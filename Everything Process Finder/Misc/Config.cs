@@ -13,6 +13,7 @@ namespace Everything_Process_Finder.Misc
         static readonly string ConfigPath = $"{AppContext.BaseDirectory}config.json";
         public static Config Instance { get; } = LoadConfig();
         public bool RunOnStartup { get; set; } = true;
+        public int WindowCheckLoopInterval { get; set; } = 1;
 
         static Config LoadConfig()
         {

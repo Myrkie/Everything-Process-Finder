@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using System.Diagnostics;
+using Serilog;
 
 namespace Everything_Process_Finder.Misc
 {
@@ -6,41 +7,82 @@ namespace Everything_Process_Finder.Misc
     {
         private static readonly ILogger Logger = Log.ForContext(typeof(TrayIcon));
 
-        public static ToolStripMenuItem? CheckboxMenuItem => _checkboxMenuItem;
         private static NotifyIcon? _trayIcon;
-        private static ToolStripMenuItem? _checkboxMenuItem;
+        private ToolStripMenuItem? _connectionStatusItem;
+        
+        public static ToolStripMenuItem? CheckboxAutoStartMenuItem => _checkboxAutoStartMenuItem;
+        private static ToolStripMenuItem? _checkboxAutoStartMenuItem;
+        
+        public static ToolStripMenuItem? CheckBoxShowConsoleMenuItem => _checkboxShowConsoleMenuItem;
+        private static ToolStripMenuItem? _checkboxShowConsoleMenuItem;
+
+
 
         public void Build()
         {
-            _trayIcon = new NotifyIcon();
-            _trayIcon.Icon = SystemIcons.Application;
-            _trayIcon.Visible = true;
-            _trayIcon.Text = Utils.AppName;
-            var contextMenu = new ContextMenuStrip();
-            _checkboxMenuItem = new ToolStripMenuItem("Start with Windows");
-            _checkboxMenuItem.CheckOnClick = true;
-            _checkboxMenuItem.CheckedChanged += CheckboxMenuItem_CheckedChanged;
-            contextMenu.Items.Add(_checkboxMenuItem);
-            contextMenu.Items.Add("Show/Hide", null, (_, _) =>
+            _trayIcon = new NotifyIcon()
             {
+                Icon = SystemIcons.Application,
+                Visible = true,
+                Text = Utils.AppName,
+            };
+            _trayIcon.DoubleClick += (_, _) =>
+            {
+                string uri = "es:";
+                Process.Start(new ProcessStartInfo(uri) { UseShellExecute = true });
+                Logger.Information("Everything window focused.");
+            };
+            // context menu
+            var contextMenu = new ContextMenuStrip();
+            
+            // connection status
+            _connectionStatusItem = new ToolStripMenuItem("Connection Status")
+            {
+                Image = CreateStatusIconImage(false)
+            };
+            
+            
+            contextMenu.Items.Add(_connectionStatusItem); 
+            // auto start
+            _checkboxAutoStartMenuItem = new ToolStripMenuItem("Start with Windows");
+            _checkboxAutoStartMenuItem.CheckOnClick = true;
+            _checkboxAutoStartMenuItem.CheckedChanged += (_, _) =>
+            {
+                Utils.AutoStartup();
+                Config.Instance.SaveConfig();
+            };
+            contextMenu.Items.Add(_checkboxAutoStartMenuItem);
+            
+            
+            // show hide console option
+            _checkboxShowConsoleMenuItem = new ToolStripMenuItem("Show Console");
+            _checkboxShowConsoleMenuItem.CheckOnClick = true;
+            _checkboxShowConsoleMenuItem.CheckedChanged += (_, _) =>
+            {
+                ConsoleManager.ToggleConsole(_checkboxShowConsoleMenuItem);
                 Logger.Information("showing window");
-                ConsoleManager.ToggleConsole();
-            });
+            };
+            contextMenu.Items.Add(_checkboxShowConsoleMenuItem);
+            
             contextMenu.Items.Add("Exit", null, (_, _) => { Application.Exit(); });
-
-
+            
             _trayIcon.ContextMenuStrip = contextMenu;
         }
-
-        private static void CheckboxMenuItem_CheckedChanged(object? sender, EventArgs e)
+        
+        public void SetConState(bool isConnected)
         {
-            switch (sender)
-            {
-                case ToolStripMenuItem { Checked: true }:
-                    Utils.AutoStartup();
-                    break;
-            }
+            if (_connectionStatusItem != null) _connectionStatusItem.Image = CreateStatusIconImage(isConnected);
+        }
 
+        private Image CreateStatusIconImage(bool isConnected)
+        {
+            int size = 16;
+            var bitmap = new Bitmap(size, size);
+            using var g = Graphics.FromImage(bitmap);
+            g.Clear(Color.Transparent);
+            Brush brush = isConnected ? Brushes.LimeGreen : Brushes.Red;
+            g.FillEllipse(brush, 2, 2, size - 4, size - 4);
+            return bitmap;
         }
     }
 }
