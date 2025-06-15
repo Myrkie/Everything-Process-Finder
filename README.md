@@ -1,25 +1,30 @@
 # Everything Process Finder
 
 This addon creates a window finder icon within everything void tools and searches the target application
+# Requirements
+* .NET Desktop Runtime [9.X.X](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
+* Everything void tools [1.4](https://www.voidtools.com/downloads/) or [1.5a](https://www.voidtools.com/everything-1.5a/)
+* ES Protocol enabled.
+
 
 # Installation
 1. Enable Everything ES protocol `Options => General => es: URL Protocol` ![Everything64](https://github.com/user-attachments/assets/937b731c-67e6-434e-a736-9849238c7480)
 2. Download .NET Desktop Runtime [9.X.X](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 3. Download latest from [releases](https://github.com/Myrkie/Everything-Process-Finder/releases)
-4. place in a permanent folder and run
-5. icon will appear next to "help"
-6. drag drop over selected program
+4. place in a permanent folder and run.
+5. icon will appear next to "help".
+6. drag drop over selected program.
 
 
 # Uninstallation
-1. Delete associated program and generated `config.json` files
+1. Delete associated program and generated `config.json` files.
 
 
 # Modifier Keys
-* Shift: Search by Process folder
-* Ctrl: Search by folder Path
-* None: Search by Process executable path
+* Shift: Search by Process folder.
+* Ctrl: Search by folder Path.
+* None: Search by Process executable path.
 
 
 # Usage
-https://github.com/user-attachments/assets/c7fc56f3-c125-4763-90a4-684d46b3d6b3
+https://github.com/user-attachments/assets/69a5b5cf-e339-477f-8c40-afa0de67c36b
