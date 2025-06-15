@@ -15,6 +15,7 @@ namespace Everything_Process_Finder.Misc
             _trayIcon = new NotifyIcon();
             _trayIcon.Icon = SystemIcons.Application;
             _trayIcon.Visible = true;
+            _trayIcon.Text = "Everything Process Finder";
             var contextMenu = new ContextMenuStrip();
             _checkboxMenuItem = new ToolStripMenuItem("Start with Windows");
             _checkboxMenuItem.CheckOnClick = true;
