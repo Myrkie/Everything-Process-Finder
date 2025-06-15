@@ -31,6 +31,8 @@ https://github.com/user-attachments/assets/69a5b5cf-e339-477f-8c40-afa0de67c36b
 
 
 # Tray Icon
+![oOz9pqlKZE](https://github.com/user-attachments/assets/5c3f33f6-b9f9-4405-9ab4-e6369ebcc12f)
 
 
 # Built into UI
+![Everything64_XE4b40wXkH](https://github.com/user-attachments/assets/b97b821e-9ff3-46d6-9c48-058ea9919ca5)
