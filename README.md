@@ -28,3 +28,9 @@ This addon creates a window finder icon within everything void tools and searche
 
 # Usage
 https://github.com/user-attachments/assets/69a5b5cf-e339-477f-8c40-afa0de67c36b
+
+
+# Tray Icon
+
+
+# Built into UI

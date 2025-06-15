@@ -121,7 +121,7 @@ class Program
             Logger.Error("Everything window not found.");
             return;
         }
-
+        // this is overkill?
         const int maxRetries = 20;
         int retryDelayMs = 100;
 
