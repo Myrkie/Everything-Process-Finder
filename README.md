@@ -11,3 +11,14 @@ This addon creates a window finder icon within everything void tools and searche
 
 # Uninstallation
 1. Delete associated program and generated `config.json` files
+
+
+# Modifier Keys
+* Shift: Search by Process folder
+* Ctrl: Search by Folder Path
+* None: Search by process executable path
+# Usage
+
+
+https://github.com/user-attachments/assets/c7fc56f3-c125-4763-90a4-684d46b3d6b3
+
