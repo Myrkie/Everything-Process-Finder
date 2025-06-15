@@ -8,3 +8,6 @@ This addon creates a window finder icon within everything void tools and searche
 2. place in a permanent folder and run
 3. icon will appear next to "help"
 4. drag drop over selected program
+
+# Uninstallation
+1. Delete associated program and generated `config.json` files
