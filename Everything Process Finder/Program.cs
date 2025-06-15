@@ -103,7 +103,7 @@ class Program
         {
             Interval = 1000 
         };
-        timer.Tick += (s, e) => MonitorEverythingWindow(findButton);
+        timer.Tick += (_, _) => MonitorEverythingWindow(findButton);
         timer.Start();
 
         Application.Run();

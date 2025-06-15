@@ -30,8 +30,8 @@ namespace Everything_Process_Finder.Misc
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern IntPtr GetStdHandle(int nStdHandle);
 
-        private const int STD_OUTPUT_HANDLE = -11;
-        private const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004;
+        private const int StdOutputHandle = -11;
+        private const uint EnableVirtualTerminalProcessing = 0x0004;
         
         private static void ShowConsole()
         {
@@ -40,9 +40,9 @@ namespace Everything_Process_Finder.Misc
         
         private static void EnableAnsiSupport()
         {
-            var handle = GetStdHandle(STD_OUTPUT_HANDLE);
+            var handle = GetStdHandle(StdOutputHandle);
             if (!GetConsoleMode(handle, out var mode)) return;
-            mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+            mode |= EnableVirtualTerminalProcessing;
             SetConsoleMode(handle, mode);
         }
 

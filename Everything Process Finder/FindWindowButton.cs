@@ -2,12 +2,13 @@
 
 namespace Everything_Process_Finder
 {
-    public class FindWindowButton : Button
+    public sealed class FindWindowButton : Button
     {
-        private bool _dragging = false;
-        private Cursor _finderCursor;
+        private bool _dragging;
+        private readonly Cursor _finderCursor;
 
         public event Action<IntPtr, string>? WindowFound;
+        // ReSharper disable once UnusedParameter.Local
         public FindWindowButton(bool debug = false)
         {
             FlatStyle = FlatStyle.Flat;
@@ -32,23 +33,22 @@ namespace Everything_Process_Finder
 
             int margin = Math.Min(Width, Height) / 6; // dynamic margin
 
-            using (Pen pen = new Pen(ForeColor, 1))
-            {
-                // Vertical line
-                pe.Graphics.DrawLine(pen, centerX, margin, centerX, Height - margin);
+            using Pen pen = new Pen(ForeColor, 1);
+            
+            // Vertical line
+            pe.Graphics.DrawLine(pen, centerX, margin, centerX, Height - margin);
 
-                // Horizontal line
-                pe.Graphics.DrawLine(pen, margin, centerY, Width - margin, centerY);
-            }
+            // Horizontal line
+            pe.Graphics.DrawLine(pen, margin, centerY, Width - margin, centerY);
         }
 
-        private void StartDrag(object sender, MouseEventArgs e)
+        private void StartDrag(object? sender, MouseEventArgs e)
         {
             _dragging = true;
             Cursor.Current = _finderCursor;
         }
 
-        private void StopDrag(object sender, MouseEventArgs e)
+        private void StopDrag(object? sender, MouseEventArgs e)
         {
             if (_dragging)
             {
@@ -65,7 +65,7 @@ namespace Everything_Process_Finder
             }
         }
 
-        private void Drag(object sender, MouseEventArgs e)
+        private void Drag(object? sender, MouseEventArgs e)
         {
             if (_dragging)
             {

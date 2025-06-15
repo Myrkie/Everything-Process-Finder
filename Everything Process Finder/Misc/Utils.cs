@@ -6,7 +6,7 @@ namespace Everything_Process_Finder.Misc;
 
 public class Utils
 {
-    const string appName = "Everything Process Finder";
+    public const string AppName = "Everything Process Finder";
 
     internal static void AutoStartup()
     {
@@ -14,15 +14,15 @@ public class Utils
             Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
         if (Config.Instance.RunOnStartup)
         {
-            TrayIcon.CheckboxMenuItem.Checked = true;
+            if (TrayIcon.CheckboxMenuItem != null) TrayIcon.CheckboxMenuItem.Checked = true;
             Config.Instance.RunOnStartup = true;
-            rk?.SetValue("Everything Process Finder", Application.ExecutablePath);
+            rk?.SetValue(AppName, Application.ExecutablePath);
         }
         else
         {
-            TrayIcon.CheckboxMenuItem.Checked = false;
+            if (TrayIcon.CheckboxMenuItem != null) TrayIcon.CheckboxMenuItem.Checked = false;
             Config.Instance.RunOnStartup = false;
-            rk?.DeleteValue("Everything Process Finder", false);
+            rk?.DeleteValue(AppName, false);
         }
     }
     
@@ -31,9 +31,9 @@ public class Utils
     internal static void SingleInstanceCheck()
     {
         Thread.Sleep(2000); // let's wait a bit to let any previous ones close before checking.
-        _mutex = new Mutex(true, appName, out var createdNew);
+        _mutex = new Mutex(true, AppName, out var createdNew);
         if (createdNew) return;
-        var str = appName + " is already running.";
+        var str = AppName + " is already running.";
         Console.WriteLine(str);
         MessageBox.Show(str);
         Environment.Exit(0);

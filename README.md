@@ -16,8 +16,8 @@ This addon creates a window finder icon within everything void tools and searche
 
 # Modifier Keys
 * Shift: Search by Process folder
-* Ctrl: Search by Folder Path
-* None: Search by process executable path
+* Ctrl: Search by folder Path
+* None: Search by Process executable path
 
 
 # Usage

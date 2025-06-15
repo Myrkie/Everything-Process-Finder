@@ -8,10 +8,10 @@ public static class NativeMethods {
     private static readonly ILogger Logger = Log.ForContext(typeof(NativeMethods));
 
     [DllImport("user32.dll", SetLastError = true)]
-    internal static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+    internal static extern IntPtr FindWindow(string lpClassName, string? lpWindowName);
 
     [DllImport("user32.dll", SetLastError = true)]
-    internal static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+    internal static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string? lpszWindow);
     
     [DllImport("user32.dll", SetLastError = true)]
     private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
@@ -22,7 +22,7 @@ public static class NativeMethods {
     [DllImport("kernel32.dll", SetLastError = true)]
     private static extern bool CloseHandle(IntPtr hObject);
 
-    const uint PROCESS_QUERY_LIMITED_INFORMATION = 0x1000;
+    const uint ProcessQueryLimitedInformation = 0x1000;
     
     [DllImport("user32.dll", SetLastError = true)]
     internal static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
@@ -38,15 +38,14 @@ public static class NativeMethods {
             throw new ArgumentException("Invalid window handle.");
         }
 
-        uint processId;
-        GetWindowThreadProcessId(hWnd, out processId);
+        GetWindowThreadProcessId(hWnd, out var processId);
         if (processId == 0)
         {
             Logger.Error("Invalid process id");
             throw new InvalidOperationException("Failed to get process ID from window handle.");
         }
 
-        IntPtr hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, processId);
+        IntPtr hProcess = OpenProcess(ProcessQueryLimitedInformation, false, processId);
         if (hProcess == IntPtr.Zero)
         {
             Logger.Error("Open process failed");
@@ -54,8 +53,8 @@ public static class NativeMethods {
         }
         try
         {
-            const int MAX_PATH = 260;
-            StringBuilder buffer = new StringBuilder(MAX_PATH);
+            const int maxPath = 260;
+            StringBuilder buffer = new StringBuilder(maxPath);
             int size = buffer.Capacity;
 
             bool success = QueryFullProcessImageName(hProcess, 0, buffer, ref size);
