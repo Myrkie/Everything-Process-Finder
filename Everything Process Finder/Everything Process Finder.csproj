@@ -9,7 +9,17 @@
         <PublishAot>true</PublishAot>
         <_SuppressWinFormsTrimError>true</_SuppressWinFormsTrimError>
         <Authors>Myrkur</Authors>
-        
+    </PropertyGroup>
+
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <PlatformTarget>x64</PlatformTarget>
+        <AssemblyName>Everything-Process-Finder-X64Rls</AssemblyName>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <PlatformTarget>x64</PlatformTarget>
+        <AssemblyName>Everything-Process-Finder-X64Dbg</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>
