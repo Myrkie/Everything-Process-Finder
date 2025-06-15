@@ -7,6 +7,7 @@
         <UseWindowsForms>true</UseWindowsForms>
         <ImplicitUsings>enable</ImplicitUsings>
         <PublishAot>true</PublishAot>
+        <!-- Shut up the compiler -->
         <_SuppressWinFormsTrimError>true</_SuppressWinFormsTrimError>
         <Authors>Myrkur</Authors>
         <Version>1.0.2</Version>
