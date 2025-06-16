@@ -18,11 +18,9 @@ namespace Everything_Process_Finder.Misc
         static Config LoadConfig()
         {
             Config? cfg = File.Exists(ConfigPath) ? JsonSerializer.Deserialize(File.ReadAllText(ConfigPath), ConfigSourceGenerationContext.Default.Config) : null;
-            if(cfg == null)
-            {
-                cfg = new Config();
-                cfg.SaveConfig();
-            }
+            if (cfg != null) return cfg;
+            cfg = new Config();
+            cfg.SaveConfig();
 
             return cfg;
         }

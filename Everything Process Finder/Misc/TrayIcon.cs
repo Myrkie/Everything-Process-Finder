@@ -4,7 +4,7 @@ namespace Everything_Process_Finder.Misc
 {
     public class TrayIcon
     {
-        private static readonly ILogger Logger = Log.ForContext(typeof(TrayIcon));
+        private static readonly ILogger Logger = Log.ForContext<TrayIcon>();
 
         private static NotifyIcon? _trayIcon;
         private ToolStripMenuItem? _connectionStatusItem;

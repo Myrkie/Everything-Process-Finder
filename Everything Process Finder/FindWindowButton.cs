@@ -50,19 +50,15 @@ namespace Everything_Process_Finder
 
         private void StopDrag(object? sender, MouseEventArgs e)
         {
-            if (_dragging)
-            {
-                _dragging = false;
-                Cursor.Current = Cursors.Default;
-
-                Point pos = Cursor.Position;
-                IntPtr hWnd = WindowFromPoint(pos);
-                if (hWnd != IntPtr.Zero)
-                {
-                    string title = GetWindowText(hWnd);
-                    WindowFound?.Invoke(hWnd, title);
-                }
-            }
+            if (!_dragging) return;
+            _dragging = false;
+            Cursor.Current = Cursors.Default;
+            Point pos = Cursor.Position;
+            IntPtr hWnd = WindowFromPoint(pos);
+            
+            if (hWnd == IntPtr.Zero) return;
+            string title = GetWindowText(hWnd);
+            WindowFound?.Invoke(hWnd, title);
         }
 
         private void Drag(object? sender, MouseEventArgs e)

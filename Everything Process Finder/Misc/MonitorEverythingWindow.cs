@@ -3,7 +3,6 @@ using Timer = System.Windows.Forms.Timer;
 
 namespace Everything_Process_Finder.Misc
 {
-
     public static class MonitorEverythingWindow
     {
         private static readonly ILogger Logger = Log.ForContext(typeof(MonitorEverythingWindow));
