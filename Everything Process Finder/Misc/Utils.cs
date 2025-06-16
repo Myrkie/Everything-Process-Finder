@@ -83,8 +83,6 @@ public static class Utils
             Visible = true,
             Text = AppName
         };
-        
-        imageStream.Dispose();
     }
     internal static void EnsureElevatedPrivileges()
     {
