@@ -13,6 +13,7 @@ namespace Everything_Process_Finder.Misc
 
         public static NotifyIcon? NotifyIcon;
         public static Image? NotifyImage;
+        private static Icon? _appIcon;
 
         internal static void AutoStartup()
         {
@@ -77,17 +78,17 @@ namespace Everything_Process_Finder.Misc
 
             NotifyImage = Image.FromStream(imageStream);
 
-            // reset seek and reuse stream
             imageStream.Seek(0, SeekOrigin.Begin);
 
-            using var icon = new Icon(imageStream);
+            _appIcon = new Icon(imageStream);
             NotifyIcon = new NotifyIcon
             {
-                Icon = icon,
+                Icon = _appIcon,
                 Visible = true,
                 Text = AppName
             };
         }
+
 
         internal static void EnsureElevatedPrivileges()
         {
