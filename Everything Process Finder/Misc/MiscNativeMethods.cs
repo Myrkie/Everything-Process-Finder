@@ -5,12 +5,12 @@ using Serilog;
 // ReSharper disable IdentifierTypo
 namespace Everything_Process_Finder.Misc
 { 
-    public static class NativeMethods
+    public static class MiscNativeMethods
     {
-        private static readonly ILogger Logger = Log.ForContext(typeof(NativeMethods));
+        private static readonly ILogger Logger = Log.ForContext(typeof(MiscNativeMethods));
 
         [DllImport("user32.dll", SetLastError = true)]
-        internal static extern IntPtr FindWindow(string lpClassName, string? lpWindowName);
+        private static extern IntPtr FindWindow(string lpClassName, string? lpWindowName);
 
         [DllImport("user32.dll", SetLastError = true)]
         internal static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass,
@@ -76,6 +76,16 @@ namespace Everything_Process_Finder.Misc
                 Logger.Information("closing process handle");
                 CloseHandle(hProcess);
             }
+        }
+
+        public static (IntPtr, bool) FindEverythingWindowHandle()
+        {
+            var handle = FindWindow("EVERYTHING", null);
+
+            if (handle != IntPtr.Zero) return (handle, false);
+            handle = FindWindow("EVERYTHING_(1.5a)", null);
+
+            return (handle, true);
         }
     }
 }

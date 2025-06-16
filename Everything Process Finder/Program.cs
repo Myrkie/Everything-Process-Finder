@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net;
 using Everything_Process_Finder.Misc;
+using Everything_Process_Finder.Utils;
 using Serilog;
 
 namespace Everything_Process_Finder
@@ -18,19 +19,26 @@ namespace Everything_Process_Finder
                     outputTemplate:
                     "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}",
                     theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Code)
+                .WriteTo.File(
+                    path: "logs/log-.txt",
+                    outputTemplate:
+                    "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}",
+                    rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: 4,
+                    shared: true)
                 .CreateLogger();
             // be nice to debugger
             if (!Console.IsOutputRedirected)
             {
-                Utils.EnsureElevatedPrivileges();
+                Utilities.EnsureElevatedPrivileges();
             }
 
-            Utils.SingleInstanceCheck();
-            Utils.LoadResources();
+            Utilities.SingleInstanceCheck();
+            Utilities.LoadResources();
 
             var trayIcon = new TrayIcon();
             trayIcon.Build();
-            Utils.AutoStartup();
+            Utilities.AutoStartup();
 
             var findButton = new FindWindowButton(true)
             {
@@ -47,7 +55,7 @@ namespace Everything_Process_Finder
                 bool shiftPressed = (Control.ModifierKeys & Keys.Shift) == Keys.Shift;
                 bool ctrlPressed = (Control.ModifierKeys & Keys.Control) == Keys.Control;
 
-                var processPathByWindowHandle = NativeMethods.GetProcessPathByWindowHandle(handle);
+                var processPathByWindowHandle = MiscNativeMethods.GetProcessPathByWindowHandle(handle);
                 var process = Path.GetFileNameWithoutExtension(processPathByWindowHandle);
 
                 Logger.Information($"Found window: Handle: {handle} Title: {title} Process: {process}", handle, title,
@@ -114,12 +122,7 @@ namespace Everything_Process_Finder
 
         private static void _assemble(IntPtr handle)
         {
-            IntPtr hEverything = NativeMethods.FindWindow("EVERYTHING", null);
-            if (hEverything == IntPtr.Zero)
-            {
-                Logger.Error("Everything window not found.");
-                return;
-            }
+            var (hEverything, _) = MiscNativeMethods.FindEverythingWindowHandle();
 
             // this is overkill?
             const int maxRetries = 20;
@@ -128,7 +131,7 @@ namespace Everything_Process_Finder
             IntPtr hToolbar = IntPtr.Zero;
             for (int i = 0; i < maxRetries; i++)
             {
-                hToolbar = NativeMethods.FindWindowEx(hEverything, IntPtr.Zero, "EVERYTHING_MENUBAR", null);
+                hToolbar = MiscNativeMethods.FindWindowEx(hEverything, IntPtr.Zero, "EVERYTHING_MENUBAR", null);
                 if (hToolbar != IntPtr.Zero)
                     break;
 
@@ -142,7 +145,7 @@ namespace Everything_Process_Finder
             }
 
             Logger.Information("Attaching button to Everything's toolbar.");
-            NativeMethods.SetParent(handle, hToolbar);
+            MiscNativeMethods.SetParent(handle, hToolbar);
         }
     }
 }

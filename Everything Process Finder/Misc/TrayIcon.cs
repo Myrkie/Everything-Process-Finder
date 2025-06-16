@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Everything_Process_Finder.Utils;
+using Serilog;
 
 namespace Everything_Process_Finder.Misc
 {
@@ -19,9 +20,9 @@ namespace Everything_Process_Finder.Misc
 
         public void Build()
         {
-            _trayIcon = Utils.NotifyIcon;
+            _trayIcon = Utilities.NotifyIcon;
             if (_trayIcon == null) return;
-            _trayIcon.DoubleClick += (_, _) => { Utils.FocusEverything(); };
+            _trayIcon.DoubleClick += (_, _) => { Utilities.FocusEverything(); };
 
             // context menu
             var contextMenu = new ContextMenuStrip();
@@ -32,7 +33,7 @@ namespace Everything_Process_Finder.Misc
                 Image = CreateStatusIconImage(false),
                 CheckOnClick = false
             };
-            _connectionStatusItem.Click += (_, _) => { Utils.FocusEverything(); };
+            _connectionStatusItem.Click += (_, _) => { Utilities.FocusEverything(); };
             contextMenu.Items.Add(_connectionStatusItem);
 
 
@@ -41,7 +42,7 @@ namespace Everything_Process_Finder.Misc
             _checkboxAutoStartMenuItem.CheckOnClick = true;
             _checkboxAutoStartMenuItem.CheckedChanged += (_, _) =>
             {
-                Utils.AutoStartup();
+                Utilities.AutoStartup();
                 Config.Instance.SaveConfig();
             };
             contextMenu.Items.Add(_checkboxAutoStartMenuItem);
@@ -53,11 +54,11 @@ namespace Everything_Process_Finder.Misc
             _checkboxShowConsoleMenuItem.CheckedChanged += (_, _) =>
             {
                 ConsoleManager.ToggleConsole(_checkboxShowConsoleMenuItem);
-                Logger.Information("showing window");
+                Logger.Information("showing console");
             };
             contextMenu.Items.Add(_checkboxShowConsoleMenuItem);
 
-            contextMenu.Items.Add("Exit", Utils.NotifyImage, (_, _) => { Application.Exit(); });
+            contextMenu.Items.Add("Exit", Utilities.NotifyImage, (_, _) => { Application.Exit(); });
 
             _trayIcon.ContextMenuStrip = contextMenu;
         }

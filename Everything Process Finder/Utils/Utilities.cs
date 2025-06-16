@@ -1,14 +1,15 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using System.Security.Principal;
+using Everything_Process_Finder.Misc;
 using Microsoft.Win32;
 using Serilog;
 
-namespace Everything_Process_Finder.Misc
+namespace Everything_Process_Finder.Utils
 {
-    public static class Utils
+    public static class Utilities
     {
-        private static readonly ILogger Logger = Log.ForContext(typeof(Utils));
+        private static readonly ILogger Logger = Log.ForContext(typeof(Utilities));
         private const string AppName = "Everything Process Finder";
 
         public static NotifyIcon? NotifyIcon;

@@ -25,18 +25,18 @@ namespace Everything_Process_Finder.Misc
 
         private static void MonitorEverything()
         {
-            IntPtr currentHandle = NativeMethods.FindWindow("EVERYTHING", null);
+            var (currentHandle, alphaInstance) = MiscNativeMethods.FindEverythingWindowHandle();
 
-            if (currentHandle != IntPtr.Zero && currentHandle != _lastEverythingHandle)
+            if (currentHandle != IntPtr.Zero && _lastEverythingHandle == IntPtr.Zero)
             {
                 _lastEverythingHandle = currentHandle;
-                Logger.Information("Everything window found.");
+                Logger.Information("Everything window found. AlphaInstance:{Instance}", alphaInstance);
                 EverythingWindowFound?.Invoke(null, EventArgs.Empty);
             }
             else if (currentHandle == IntPtr.Zero && _lastEverythingHandle != IntPtr.Zero)
             {
-                Logger.Information("Everything window closed.");
-                _lastEverythingHandle = IntPtr.Zero;
+                _lastEverythingHandle = IntPtr.Zero; 
+                Logger.Information("Everything window closed. AlphaInstance:{Instance}", alphaInstance);
                 EverythingWindowClosed?.Invoke(null, EventArgs.Empty);
             }
         }
