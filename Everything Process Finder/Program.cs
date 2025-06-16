@@ -26,8 +26,6 @@ namespace Everything_Process_Finder
             }
 
             Utils.SingleInstanceCheck();
-
-            // Unused for now maybe used in the future
             Utils.LoadResources();
 
             var trayIcon = new TrayIcon();
