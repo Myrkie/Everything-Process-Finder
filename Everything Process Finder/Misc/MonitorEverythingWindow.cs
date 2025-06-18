@@ -36,7 +36,7 @@ namespace Everything_Process_Finder.Misc
             else if (currentHandle == IntPtr.Zero && _lastEverythingHandle != IntPtr.Zero)
             {
                 _lastEverythingHandle = IntPtr.Zero; 
-                Logger.Information("Everything window closed. AlphaInstance:{Instance}", alphaInstance);
+                Logger.Information("Everything window lost. AlphaInstance:{Instance}", alphaInstance);
                 EverythingWindowClosed?.Invoke(null, EventArgs.Empty);
             }
         }

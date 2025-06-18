@@ -77,15 +77,24 @@ namespace Everything_Process_Finder.Misc
                 CloseHandle(hProcess);
             }
         }
-
+        
+        // tuple resets the value and we want to keep it
+        private static bool _lastAlphaInstance;
         public static (IntPtr, bool) FindEverythingWindowHandle()
         {
             var handle = FindWindow("EVERYTHING", null);
 
-            if (handle != IntPtr.Zero) return (handle, false);
+            if (handle != IntPtr.Zero)
+            {
+                _lastAlphaInstance = false;
+                return (handle, _lastAlphaInstance);
+            }
             handle = FindWindow("EVERYTHING_(1.5a)", null);
-
-            return (handle, true);
+            if (handle != IntPtr.Zero)
+            {
+                _lastAlphaInstance = true;
+            }
+            return (handle, _lastAlphaInstance);
         }
     }
 }
