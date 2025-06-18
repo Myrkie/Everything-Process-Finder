@@ -6,10 +6,8 @@ namespace Everything_Process_Finder
     {
         private bool _dragging;
         private readonly Cursor _finderCursor;
-
         public event Action<IntPtr, string>? WindowFound;
-        // ReSharper disable once UnusedParameter.Local
-        public FindWindowButton(bool debug = false)
+        public FindWindowButton()
         {
             FlatStyle = FlatStyle.Flat;
             BackColor = Color.FromArgb(32, 32, 32);

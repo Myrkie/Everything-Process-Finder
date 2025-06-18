@@ -40,7 +40,7 @@ namespace Everything_Process_Finder
             trayIcon.Build();
             Utilities.AutoStartup();
 
-            var findButton = new FindWindowButton(true)
+            var findButton = new FindWindowButton
             {
                 Left = 400,
                 Top = 0,
@@ -84,7 +84,7 @@ namespace Everything_Process_Finder
                     {
                         string? folder = Path.GetDirectoryName(processPathByWindowHandle);
                         targetPath = !string.IsNullOrEmpty(folder)
-                            ? (folder.EndsWith("\\") ? folder : folder + "\\")
+                            ? folder.EndsWith("\\") ? folder : folder + "\\"
                             : processPathByWindowHandle + "\\";
                         Logger.Information("Ctrl held: searching by folder path.");
                         break;
@@ -104,7 +104,6 @@ namespace Everything_Process_Finder
                 Process.Start(new ProcessStartInfo(uri) { UseShellExecute = true });
 
                 Logger.Information("Search sent to Everything UI via es: protocol.");
-
             };
 
             // Start polling for Void Tools Everything window
@@ -120,32 +119,16 @@ namespace Everything_Process_Finder
             Application.Run();
         }
 
-        private static void _assemble(IntPtr handle)
+        private static void _assemble(IntPtr findButtonHandle)
         {
+            Logger.Information("Attaching button to Everything's toolbar.");
             var (hEverything, _) = MiscNativeMethods.FindEverythingWindowHandle();
 
-            // this is overkill?
-            const int maxRetries = 20;
-            int retryDelayMs = 100;
-
-            IntPtr hToolbar = IntPtr.Zero;
-            for (int i = 0; i < maxRetries; i++)
-            {
-                hToolbar = MiscNativeMethods.FindWindowEx(hEverything, IntPtr.Zero, "EVERYTHING_MENUBAR", null);
-                if (hToolbar != IntPtr.Zero)
-                    break;
-
-                Thread.Sleep(retryDelayMs);
-            }
-
-            if (hToolbar == IntPtr.Zero)
-            {
-                Logger.Error("EVERYTHING_MENUBAR control not found after waiting.");
-                return;
-            }
-
-            Logger.Information("Attaching button to Everything's toolbar.");
-            MiscNativeMethods.SetParent(handle, hToolbar);
+            var hToolbar = MiscNativeMethods.FindEverythingToolbar(hEverything);
+            if (hToolbar == IntPtr.Zero) return;
+            
+            Logger.Information("Attached button to Everything's toolbar.");
+            MiscNativeMethods.SetParent(findButtonHandle, hToolbar);
         }
     }
 }

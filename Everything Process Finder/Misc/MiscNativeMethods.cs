@@ -63,13 +63,9 @@ namespace Everything_Process_Finder.Misc
                 int size = buffer.Capacity;
 
                 bool success = QueryFullProcessImageName(hProcess, 0, buffer, ref size);
-                if (!success)
-                {
-                    Logger.Error("QueryFullProcessImageName failed");
-                    throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
-                }
-
-                return buffer.ToString(0, size);
+                if (success) return buffer.ToString(0, size);
+                Logger.Error("QueryFullProcessImageName failed");
+                throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
             }
             finally
             {
@@ -95,6 +91,26 @@ namespace Everything_Process_Finder.Misc
                 _lastAlphaInstance = true;
             }
             return (handle, _lastAlphaInstance);
+        }
+
+        public static IntPtr FindEverythingToolbar(IntPtr hEverything)
+        {
+            const int maxRetries = 20;
+            int retryDelayMs = 100;
+
+            IntPtr hToolbar = IntPtr.Zero;
+            for (int i = 0; i < maxRetries; i++)
+            {
+                hToolbar = FindWindowEx(hEverything, IntPtr.Zero, "EVERYTHING_MENUBAR", null);
+                if (hToolbar != IntPtr.Zero)
+                    break;
+
+                Thread.Sleep(retryDelayMs);
+            }
+
+            if (hToolbar != IntPtr.Zero) return hToolbar;
+            Logger.Error("EVERYTHING_MENUBAR control not found after waiting.");
+            return IntPtr.Zero;
         }
     }
 }
