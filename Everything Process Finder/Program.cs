@@ -106,10 +106,10 @@ namespace Everything_Process_Finder
             };
 
             // Start polling for Void Tools Everything window
-            MonitorEverythingWindow.EverythingWindowFound += (_, _) =>
+            MonitorEverythingWindow.EverythingWindowFound += (_, e) =>
             {
                 trayIcon.SetConState(true);
-                _assemble(findButton.Handle);
+                _assemble(e.HEverything, findButton.Handle);
             };
             MonitorEverythingWindow.EverythingWindowClosed += (_, _) => { trayIcon.SetConState(false); };
 
@@ -118,10 +118,9 @@ namespace Everything_Process_Finder
             Application.Run();
         }
 
-        private static void _assemble(IntPtr findButtonHandle)
+        private static void _assemble(IntPtr hEverything, IntPtr findButtonHandle)
         {
             Logger.Information("Attaching button to Everything's toolbar.");
-            var (hEverything, _) = MiscNativeMethods.FindEverythingWindowHandle();
 
             var hToolbar = MiscNativeMethods.FindEverythingToolbar(hEverything);
             if (hToolbar == IntPtr.Zero) return;

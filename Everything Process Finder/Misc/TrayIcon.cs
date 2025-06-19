@@ -59,12 +59,12 @@ namespace Everything_Process_Finder.Misc
                 ConsoleManager.ToggleConsole(_checkboxShowConsoleMenuItem);
             };
             contextMenu.Items.Add(_checkboxShowConsoleMenuItem);
+            
             _restartAppMenuItem = new ToolStripMenuItem("Restart");
             _restartAppMenuItem.Click += (_, _) => { Utilities.RestartApp(); };
             contextMenu.Items.Add(_restartAppMenuItem);
             
             contextMenu.Items.Add("Exit", AppResources.NotifyImage, (_, _) => { Application.Exit(); });
-            
             
             _trayIcon.ContextMenuStrip = contextMenu;
             Logger.Information("Tray icon built.");
@@ -72,7 +72,7 @@ namespace Everything_Process_Finder.Misc
         
         public void SetConState(bool isConnected)
         {
-            Logger.Information("Setting connection icon.");
+            Logger.Information("Setting connection state to {connection}", isConnected);
             if (_connectionStatusItem != null) _connectionStatusItem.Image = CreateStatusIconImage(isConnected);
         }
 

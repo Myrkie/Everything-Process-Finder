@@ -8,11 +8,16 @@ namespace Everything_Process_Finder.Misc
     {
         private static readonly ILogger Logger = Log.ForContext(typeof(MonitorEverythingWindow));
 
-        public static event EventHandler? EverythingWindowFound;
-        public static event EventHandler? EverythingWindowClosed;
-
         private static IntPtr _lastEverythingHandle = IntPtr.Zero;
         private static Timer? _timer;
+        
+        public static event EventHandler<EverythingEventArgs>? EverythingWindowFound;
+        public static event EventHandler? EverythingWindowClosed;
+        
+        public class EverythingEventArgs(IntPtr hEverything) : EventArgs
+        {
+            public IntPtr HEverything { get; } = hEverything;
+        }
 
         public static void Init()
         {
@@ -32,7 +37,7 @@ namespace Everything_Process_Finder.Misc
             {
                 _lastEverythingHandle = currentHandle;
                 Logger.Information("Everything window found. AlphaInstance:{Instance}", alphaInstance);
-                EverythingWindowFound?.Invoke(null, EventArgs.Empty);
+                EverythingWindowFound?.Invoke(null, new EverythingEventArgs(currentHandle));
             }
             else if (currentHandle == IntPtr.Zero && _lastEverythingHandle != IntPtr.Zero)
             {
