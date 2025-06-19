@@ -36,13 +36,13 @@ namespace Everything_Process_Finder.Misc
             if (currentHandle != IntPtr.Zero && _lastEverythingHandle == IntPtr.Zero)
             {
                 _lastEverythingHandle = currentHandle;
-                Logger.Information("Everything window found. AlphaInstance:{Instance}", alphaInstance);
+                Logger.Information("Everything window found. AlphaInstance:{Instance}.", alphaInstance);
                 EverythingWindowFound?.Invoke(null, new EverythingEventArgs(currentHandle));
             }
             else if (currentHandle == IntPtr.Zero && _lastEverythingHandle != IntPtr.Zero)
             {
                 _lastEverythingHandle = IntPtr.Zero; 
-                Logger.Information("Everything window lost. AlphaInstance:{Instance}", alphaInstance);
+                Logger.Information("Everything window lost. AlphaInstance:{Instance}.", alphaInstance);
                 EverythingWindowClosed?.Invoke(null, EventArgs.Empty);
             }
         }

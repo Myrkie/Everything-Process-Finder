@@ -72,7 +72,7 @@ namespace Everything_Process_Finder.Misc
         
         public void SetConState(bool isConnected)
         {
-            Logger.Information("Setting connection state to {connection}", isConnected);
+            Logger.Information("Setting connection state to {connection}.", isConnected);
             if (_connectionStatusItem != null) _connectionStatusItem.Image = CreateStatusIconImage(isConnected);
         }
 
