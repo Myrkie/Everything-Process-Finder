@@ -98,7 +98,7 @@ namespace Everything_Process_Finder
 
                 }
 
-                string encodedQuery = WebUtility.UrlEncode(targetPath);
+                string encodedQuery = WebUtility.UrlEncode($"\"{targetPath}\"");
                 string uri = $"es:{encodedQuery}";
                 Process.Start(new ProcessStartInfo(uri) { UseShellExecute = true });
 
