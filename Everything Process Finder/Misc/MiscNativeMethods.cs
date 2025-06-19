@@ -9,11 +9,11 @@ namespace Everything_Process_Finder.Misc
     {
         private static readonly ILogger Logger = Log.ForContext(typeof(MiscNativeMethods));
 
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         private static extern IntPtr FindWindow(string lpClassName, string? lpWindowName);
 
-        [DllImport("user32.dll", SetLastError = true)]
-        internal static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass,
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass,
             string? lpszWindow);
 
         [DllImport("user32.dll", SetLastError = true)]

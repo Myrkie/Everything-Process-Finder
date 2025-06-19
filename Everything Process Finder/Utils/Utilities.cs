@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
-using System.Reflection;
 using System.Security.Principal;
+using Everything_Process_Finder.Configuration;
 using Everything_Process_Finder.Misc;
 using Microsoft.Win32;
 using Serilog;
@@ -10,11 +10,7 @@ namespace Everything_Process_Finder.Utils
     public static class Utilities
     {
         private static readonly ILogger Logger = Log.ForContext(typeof(Utilities));
-        private const string AppName = "Everything Process Finder";
-
-        public static NotifyIcon? NotifyIcon;
-        public static Image? NotifyImage;
-        private static Icon? _appIcon;
+        internal const string AppName = "Everything Process Finder";
 
         internal static void AutoStartup()
         {
@@ -62,37 +58,27 @@ namespace Everything_Process_Finder.Utils
             Logger.Information("Everything window focused.");
         }
 
-        public static void LoadResources()
+        internal static void RestartApp()
         {
-            var assembly = Assembly.GetExecutingAssembly();
-            foreach (var resource in assembly.GetManifestResourceNames())
+            var startInfo = new ProcessStartInfo
             {
-                Logger.Information("Discovered Resources: {res}", resource);
-            }
-
-            var imageStream = assembly.GetManifestResourceStream("Everything_Process_Finder.res.Icon.ico");
-            if (imageStream == null)
-            {
-                Logger.Error("Could not find icon resource");
-                throw new Exception("Couldn't find icon resource");
-            }
-
-            NotifyImage = Image.FromStream(imageStream);
-
-            imageStream.Seek(0, SeekOrigin.Begin);
-
-            _appIcon = new Icon(imageStream);
-            NotifyIcon = new NotifyIcon
-            {
-                Icon = _appIcon,
-                Visible = true,
-                Text = AppName
+                UseShellExecute = true,
+                WorkingDirectory = Environment.CurrentDirectory,
+                FileName = Application.ExecutablePath,
+                Verb = "runas"
             };
+            Logger.Information("Restarting.");
+            Process.Start(startInfo);
+            Environment.Exit(0);
         }
-
 
         internal static void EnsureElevatedPrivileges()
         {
+            if (Debugger.IsAttached)
+            {
+                Logger.Information("Debugger attached, not elevating, selecting elevated processes will fail.");
+                return;
+            }
             var identity = WindowsIdentity.GetCurrent();
             var principal = new WindowsPrincipal(identity);
             if (principal.IsInRole(WindowsBuiltInRole.Administrator)) return;

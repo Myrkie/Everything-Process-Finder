@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Everything_Process_Finder.Configuration;
+using Serilog;
 using Timer = System.Windows.Forms.Timer;
 
 namespace Everything_Process_Finder.Misc

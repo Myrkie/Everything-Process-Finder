@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net;
+using Everything_Process_Finder.Forms;
 using Everything_Process_Finder.Misc;
 using Everything_Process_Finder.Utils;
 using Serilog;
@@ -22,19 +23,17 @@ namespace Everything_Process_Finder
                 .WriteTo.File(
                     path: "logs/log-.txt",
                     outputTemplate:
-                    "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}",
+                    "[{Timestamp:MM-dd-yyyy HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}",
                     rollingInterval: RollingInterval.Day,
                     retainedFileCountLimit: 4,
                     shared: true)
                 .CreateLogger();
-            // be nice to debugger
-            if (!Console.IsOutputRedirected)
-            {
-                Utilities.EnsureElevatedPrivileges();
-            }
 
+#if !DEBUG
+            Utilities.EnsureElevatedPrivileges();
+#endif
             Utilities.SingleInstanceCheck();
-            Utilities.LoadResources();
+            AppResources.LoadResources();
 
             var trayIcon = new TrayIcon();
             trayIcon.Build();

@@ -39,6 +39,8 @@
     <ItemGroup>
       <None Remove="Resources\Icon.ico" />
       <EmbeddedResource Include="res\Icon.ico" />
+      <None Remove="res\Console.ico" />
+      <EmbeddedResource Include="res\Console.ico" />
     </ItemGroup>
 
 </Project>

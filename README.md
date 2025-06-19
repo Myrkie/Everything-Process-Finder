@@ -36,3 +36,7 @@ https://github.com/user-attachments/assets/69a5b5cf-e339-477f-8c40-afa0de67c36b
 
 # Built into UI
 ![Everything64_XE4b40wXkH](https://github.com/user-attachments/assets/b97b821e-9ff3-46d6-9c48-058ea9919ca5)
+
+
+# Resources used
+[GlobalHook - Brian Geiman](https://www.codeproject.com/Articles/28064/Global-Mouse-and-Keyboard-Library)

@@ -1,11 +1,21 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Everything_Process_Finder.Misc
+namespace Everything_Process_Finder.Configuration
 {
     [JsonSerializable(typeof(Config))]
+    [JsonSerializable(typeof(HighlighterConfig))]
     [JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Default, WriteIndented = true, AllowTrailingCommas = true)]
     internal partial class ConfigSourceGenerationContext : JsonSerializerContext;
+    
+    [Serializable]
+    public class HighlighterConfig
+    {
+        public bool DrawHighlighter { get; set; } = true;
+        
+        [JsonConverter(typeof(SafeColorConverter))]
+        public Color HighlightColor { get; set; } = Color.Purple;
+    }
 
     [Serializable]
     public class Config
@@ -14,6 +24,7 @@ namespace Everything_Process_Finder.Misc
         public static Config Instance { get; } = LoadConfig();
         public bool RunOnStartup { get; set; } = true;
         public int WindowCheckLoopInterval { get; set; } = 1;
+        public HighlighterConfig Highlighter { get; set; } = new();
 
         static Config LoadConfig()
         {

@@ -1,11 +1,19 @@
 ﻿using System.Runtime.InteropServices;
+using Everything_Process_Finder.Configuration;
+using Everything_Process_Finder.Misc.MouseHook;
+using Serilog;
 
-namespace Everything_Process_Finder
+namespace Everything_Process_Finder.Forms
 {
     public sealed class FindWindowButton : Button
     {
+        private static readonly ILogger Logger = Log.ForContext<FindWindowButton>();
+
         private bool _dragging;
-        private readonly Cursor _finderCursor;
+        private readonly Cursor _finderCursor = Cursors.Cross;
+        private readonly MouseHook? _mouseHook;
+        private static WindowHighlighter? _highlighter;
+
         public event Action<IntPtr, string>? WindowFound;
         public FindWindowButton()
         {
@@ -13,11 +21,18 @@ namespace Everything_Process_Finder
             BackColor = Color.FromArgb(32, 32, 32);
             ForeColor = Color.White;
 
+            if (Config.Instance.Highlighter.DrawHighlighter)
+            {
+                _highlighter = new WindowHighlighter();
+            }
+            
+            _mouseHook = new MouseHook();
             MouseDown += StartDrag;
-            MouseUp += StopDrag;
-            MouseMove += Drag;
-
-            _finderCursor = Cursors.Cross;
+            _mouseHook.MouseMove += Drag;
+            _mouseHook.MouseUp += StopDrag;
+            _mouseHook.Start();
+            
+            Logger.Information("Created FindWindowButton.");
         }
         
         protected override void OnPaint(PaintEventArgs pe)
@@ -51,8 +66,8 @@ namespace Everything_Process_Finder
             if (!_dragging) return;
             _dragging = false;
             Cursor.Current = Cursors.Default;
-            Point pos = Cursor.Position;
-            IntPtr hWnd = WindowFromPoint(pos);
+            IntPtr hWnd = GetWindowHandleUnderCursor();
+            _highlighter?.Clear();
             
             if (hWnd == IntPtr.Zero) return;
             string title = GetWindowText(hWnd);
@@ -61,12 +76,17 @@ namespace Everything_Process_Finder
 
         private void Drag(object? sender, MouseEventArgs e)
         {
-            if (_dragging)
-            {
-            }
+            if (!_dragging) return;
+            if (_highlighter == null) return;
+            
+            IntPtr hWnd = GetWindowHandleUnderCursor();
+            if (hWnd != IntPtr.Zero && hWnd != Handle && hWnd != _highlighter.Handle)
+                _highlighter.HighlightWindow(hWnd);
+            else
+                _highlighter.Clear();
         }
 
-        // --- Win32 API Imports ---
+        // --- Win32 API Imports and Constants ---
 
         [DllImport("user32.dll")]
         private static extern IntPtr WindowFromPoint(Point pt);
@@ -80,6 +100,11 @@ namespace Everything_Process_Finder
             var buff = new System.Text.StringBuilder(nChars);
             GetWindowText(hWnd, buff, nChars);
             return buff.ToString();
+        }
+        private IntPtr GetWindowHandleUnderCursor()
+        {
+            Point pos = Cursor.Position;
+            return WindowFromPoint(pos);
         }
     }
 }

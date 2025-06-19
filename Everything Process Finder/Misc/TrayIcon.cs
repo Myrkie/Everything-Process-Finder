@@ -1,4 +1,5 @@
-﻿using Everything_Process_Finder.Utils;
+﻿using Everything_Process_Finder.Configuration;
+using Everything_Process_Finder.Utils;
 using Serilog;
 
 namespace Everything_Process_Finder.Misc
@@ -16,11 +17,13 @@ namespace Everything_Process_Finder.Misc
         public static ToolStripMenuItem? CheckBoxShowConsoleMenuItem => _checkboxShowConsoleMenuItem;
         private static ToolStripMenuItem? _checkboxShowConsoleMenuItem;
 
-
+        public static ToolStripMenuItem? RestartAppMenuItem => _restartAppMenuItem;
+        private static ToolStripMenuItem? _restartAppMenuItem;
 
         public void Build()
         {
-            _trayIcon = Utilities.NotifyIcon;
+            Logger.Information("Building tray icon.");
+            _trayIcon = AppResources.NotifyIcon;
             if (_trayIcon == null) return;
             _trayIcon.DoubleClick += (_, _) => { Utilities.FocusEverything(); };
 
@@ -49,22 +52,27 @@ namespace Everything_Process_Finder.Misc
 
 
             // show hide console option
-            _checkboxShowConsoleMenuItem = new ToolStripMenuItem("Show Console");
+            _checkboxShowConsoleMenuItem = new ToolStripMenuItem("Show Console", AppResources.ConsoleImage);
             _checkboxShowConsoleMenuItem.CheckOnClick = true;
             _checkboxShowConsoleMenuItem.CheckedChanged += (_, _) =>
             {
                 ConsoleManager.ToggleConsole(_checkboxShowConsoleMenuItem);
-                Logger.Information("showing console");
             };
             contextMenu.Items.Add(_checkboxShowConsoleMenuItem);
-
-            contextMenu.Items.Add("Exit", Utilities.NotifyImage, (_, _) => { Application.Exit(); });
-
+            _restartAppMenuItem = new ToolStripMenuItem("Restart");
+            _restartAppMenuItem.Click += (_, _) => { Utilities.RestartApp(); };
+            contextMenu.Items.Add(_restartAppMenuItem);
+            
+            contextMenu.Items.Add("Exit", AppResources.NotifyImage, (_, _) => { Application.Exit(); });
+            
+            
             _trayIcon.ContextMenuStrip = contextMenu;
+            Logger.Information("Tray icon built.");
         }
         
         public void SetConState(bool isConnected)
         {
+            Logger.Information("Setting connection icon.");
             if (_connectionStatusItem != null) _connectionStatusItem.Image = CreateStatusIconImage(isConnected);
         }
 
