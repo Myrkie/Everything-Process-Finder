@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.Net;
 using Everything_Process_Finder.Forms;
 using Everything_Process_Finder.Misc;
 using Everything_Process_Finder.Utils;
@@ -46,70 +44,13 @@ namespace Everything_Process_Finder
                 Width = 22,
                 Height = 22,
             };
-
-            findButton.WindowFound += (handle, title) =>
-            {
-                if (handle == IntPtr.Zero) return;
-
-                bool shiftPressed = (Control.ModifierKeys & Keys.Shift) == Keys.Shift;
-                bool ctrlPressed = (Control.ModifierKeys & Keys.Control) == Keys.Control;
-
-                var processPathByWindowHandle = MiscNativeMethods.GetProcessPathByWindowHandle(handle);
-                var process = Path.GetFileNameWithoutExtension(processPathByWindowHandle);
-
-                Logger.Information($"Found window: Handle: {handle} Title: {title} Process: {process}", handle, title,
-                    process);
-
-                string targetPath = "";
-
-                Structs.Modifier modifier = Structs.Modifier.None;
-
-                if (shiftPressed)
-                    modifier = Structs.Modifier.Shift;
-                else if (ctrlPressed)
-                    modifier = Structs.Modifier.Control;
-
-                switch (modifier)
-                {
-                    case Structs.Modifier.Shift:
-                    {
-                        string? folder = Path.GetDirectoryName(processPathByWindowHandle);
-                        targetPath = !string.IsNullOrEmpty(folder) ? folder : processPathByWindowHandle;
-                        Logger.Information("Shift: searching by process folder.");
-                        break;
-                    }
-
-                    case Structs.Modifier.Control:
-                    {
-                        string? folder = Path.GetDirectoryName(processPathByWindowHandle);
-                        targetPath = !string.IsNullOrEmpty(folder)
-                            ? folder.EndsWith("\\") ? folder : folder + "\\"
-                            : processPathByWindowHandle + "\\";
-                        Logger.Information("Ctrl held: searching by folder path.");
-                        break;
-                    }
-
-                    case Structs.Modifier.None:
-                    {
-                        targetPath = processPathByWindowHandle;
-                        Logger.Information("No modifiers: searching by process executable.");
-                        break;
-                    }
-
-                }
-
-                string encodedQuery = WebUtility.UrlEncode($"\"{targetPath}\"");
-                string uri = $"es:{encodedQuery}";
-                Process.Start(new ProcessStartInfo(uri) { UseShellExecute = true });
-
-                Logger.Information("Search sent to Everything UI via es: protocol.");
-            };
+            findButton.WindowFound += Utilities.QueryEverything;
 
             // Start polling for Void Tools Everything window
-            MonitorEverythingWindow.EverythingWindowFound += (_, e) =>
+            MonitorEverythingWindow.EverythingWindowFound += (_, hEverything) =>
             {
                 trayIcon.SetConState(true);
-                _assemble(e.HEverything, findButton.Handle);
+                _assemble(hEverything, findButton.Handle);
             };
             MonitorEverythingWindow.EverythingWindowClosed += (_, _) => { trayIcon.SetConState(false); };
 

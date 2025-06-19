@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Net;
 using System.Security.Principal;
 using Everything_Process_Finder.Configuration;
 using Everything_Process_Finder.Misc;
@@ -47,7 +48,7 @@ namespace Everything_Process_Finder.Utils
             if (createdNew) return;
             var str = AppName + " is already running.";
             Logger.Information(str);
-            MessageBox.Show(str, AppName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            Forms.MessageBox.Show(str, AppName);
             Environment.Exit(0);
         }
 
@@ -71,6 +72,55 @@ namespace Everything_Process_Finder.Utils
             Process.Start(startInfo);
             Environment.Exit(0);
         }
+
+        internal static void QueryEverything(IntPtr handle, string title)
+        {
+            bool shiftPressed = (Control.ModifierKeys & Keys.Shift) == Keys.Shift;
+            bool ctrlPressed = (Control.ModifierKeys & Keys.Control) == Keys.Control;
+
+            var processPath = MiscNativeMethods.GetProcessPathByWindowHandle(handle);
+            var process = Path.GetFileNameWithoutExtension(processPath);
+
+            Logger.Information($"Found window: Handle: {handle} Title: {title} Process: {process}", handle, title, process);
+
+            // weird shit, ternary expressions hurt my head
+            Structs.Modifier modifier = shiftPressed
+                ? Structs.Modifier.Shift
+                : ctrlPressed
+                    ? Structs.Modifier.Control
+                    : Structs.Modifier.None;
+
+            string? folder = Path.GetDirectoryName(processPath);
+            string targetPath;
+
+            switch (modifier)
+            {
+                case Structs.Modifier.Shift:
+                    targetPath = !string.IsNullOrEmpty(folder) ? folder : processPath;
+                    Logger.Information("Shift: searching by process folder.");
+                    break;
+
+                case Structs.Modifier.Control:
+                    if (!string.IsNullOrEmpty(folder))
+                        targetPath = folder.EndsWith("\\") ? folder : folder + "\\";
+                    else
+                        targetPath = processPath + "\\";
+                    Logger.Information("Ctrl held: searching by folder path.");
+                    break;
+
+                default:
+                    targetPath = processPath;
+                    Logger.Information("No modifiers: searching by process executable.");
+                    break;
+            }
+
+            string encodedQuery = WebUtility.UrlEncode($"\"{targetPath}\"");
+            string uri = $"es:{encodedQuery}";
+
+            Process.Start(new ProcessStartInfo(uri) { UseShellExecute = true });
+            Logger.Information("Search sent to Everything UI via es: protocol.");
+        }
+
 
         internal static void EnsureElevatedPrivileges()
         {
