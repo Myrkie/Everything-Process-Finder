@@ -1,4 +1,5 @@
 ﻿using System.Media;
+using Everything_Process_Finder.Utils;
 
 namespace Everything_Process_Finder.Forms
 {
@@ -12,7 +13,7 @@ namespace Everything_Process_Finder.Forms
             StartPosition = FormStartPosition.CenterScreen;
             MaximizeBox = false;
             MinimizeBox = false;
-            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+            Icon = AppResources.AppIcon;
 
             Label messageLabel = new Label();
             messageLabel.Text = message;
@@ -36,6 +37,7 @@ namespace Everything_Process_Finder.Forms
             var msgBox = new MessageBox(message, title);
             SystemSounds.Exclamation.Play();
             msgBox.ShowDialog();
+            msgBox.Focus();
         }
     }
 }

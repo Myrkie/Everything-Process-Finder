@@ -53,6 +53,14 @@ namespace Everything_Process_Finder.Forms
 
             // Horizontal line
             pe.Graphics.DrawLine(pen, margin, centerY, Width - margin, centerY);
+
+            // Draw question mark in top-right corner
+            string questionMark = "?";
+            using Font font = new Font(Font.FontFamily, 6, FontStyle.Regular);
+            SizeF textSize = pe.Graphics.MeasureString(questionMark, font);
+            using Brush brush = new SolidBrush(ForeColor);
+            pe.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
+            pe.Graphics.DrawString(questionMark, font, brush, Width - textSize.Width - 2, 0);
         }
 
         private void StartDrag(object? sender, MouseEventArgs e)
@@ -69,7 +77,7 @@ namespace Everything_Process_Finder.Forms
             IntPtr hWnd = GetWindowHandleUnderCursor();
             _highlighter?.Clear();
             
-            if (hWnd == IntPtr.Zero) return;
+            if (hWnd == IntPtr.Zero | hWnd == Handle) return;
             string title = GetWindowText(hWnd);
             WindowFound?.Invoke(hWnd, title);
         }
@@ -101,7 +109,7 @@ namespace Everything_Process_Finder.Forms
             GetWindowText(hWnd, buff, nChars);
             return buff.ToString();
         }
-        private IntPtr GetWindowHandleUnderCursor()
+        private static IntPtr GetWindowHandleUnderCursor()
         {
             Point pos = Cursor.Position;
             return WindowFromPoint(pos);

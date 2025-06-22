@@ -10,7 +10,7 @@ namespace Everything_Process_Finder.Utils
         public static NotifyIcon? NotifyIcon;
         public static Image? NotifyImage;
         public static Image? ConsoleImage;
-        private static Icon? _appIcon;
+        public static Icon? AppIcon;
         
         public static void LoadResources()
         {
@@ -40,10 +40,10 @@ namespace Everything_Process_Finder.Utils
 
             mainIconStream.Seek(0, SeekOrigin.Begin);
 
-            _appIcon = new Icon(mainIconStream);
+            AppIcon = new Icon(mainIconStream);
             NotifyIcon = new NotifyIcon
             {
-                Icon = _appIcon,
+                Icon = AppIcon,
                 Visible = true,
                 Text = Utilities.AppName
             };

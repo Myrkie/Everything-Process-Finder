@@ -121,7 +121,6 @@ namespace Everything_Process_Finder.Utils
             Logger.Information("Search sent to Everything UI via es: protocol.");
         }
 
-
         internal static void EnsureElevatedPrivileges()
         {
             if (Debugger.IsAttached)

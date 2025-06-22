@@ -6,79 +6,75 @@ namespace Everything_Process_Finder.Misc
 {
     public class TrayIcon
     {
-        private static readonly ILogger Logger = Log.ForContext<TrayIcon>();
+        private static readonly ILogger Logger = Log.ForContext(typeof(TrayIcon));
 
-        private static NotifyIcon? _trayIcon;
-        private ToolStripMenuItem? _connectionStatusItem;
+        private static readonly NotifyIcon? NotifyIcon;
         
-        public static ToolStripMenuItem? CheckboxAutoStartMenuItem => _checkboxAutoStartMenuItem;
-        private static ToolStripMenuItem? _checkboxAutoStartMenuItem;
-        
-        public static ToolStripMenuItem? CheckBoxShowConsoleMenuItem => _checkboxShowConsoleMenuItem;
-        private static ToolStripMenuItem? _checkboxShowConsoleMenuItem;
+        // ReSharper disable MemberCanBePrivate.Global
+        public static readonly ToolStripMenuItem? ConnectionStatusItem;
+        public static readonly ToolStripMenuItem? CheckboxAutoStartMenuItem;
+        public static readonly ToolStripMenuItem? CheckBoxShowConsoleMenuItem;
+        public static readonly ToolStripMenuItem? RestartAppMenuItem;
 
-        public static ToolStripMenuItem? RestartAppMenuItem => _restartAppMenuItem;
-        private static ToolStripMenuItem? _restartAppMenuItem;
-
-        public void Build()
+        static TrayIcon()
         {
             Logger.Information("Building tray icon.");
-            _trayIcon = AppResources.NotifyIcon;
-            if (_trayIcon == null) return;
-            _trayIcon.DoubleClick += (_, _) => { Utilities.FocusEverything(); };
+            NotifyIcon = AppResources.NotifyIcon;
+            if (NotifyIcon == null) return;
+            NotifyIcon.DoubleClick += (_, _) => { Utilities.FocusEverything(); };
 
             // context menu
             var contextMenu = new ContextMenuStrip();
 
             // connection status
-            _connectionStatusItem = new ToolStripMenuItem("Connection Status")
+            ConnectionStatusItem = new ToolStripMenuItem("Connection Status")
             {
                 Image = CreateStatusIconImage(false),
                 CheckOnClick = false
             };
-            _connectionStatusItem.Click += (_, _) => { Utilities.FocusEverything(); };
-            contextMenu.Items.Add(_connectionStatusItem);
+            ConnectionStatusItem.Click += (_, _) => { Utilities.FocusEverything(); };
+            contextMenu.Items.Add(ConnectionStatusItem);
 
 
             // auto start
-            _checkboxAutoStartMenuItem = new ToolStripMenuItem("Start with Windows");
-            _checkboxAutoStartMenuItem.CheckOnClick = true;
-            _checkboxAutoStartMenuItem.CheckedChanged += (_, _) =>
+            CheckboxAutoStartMenuItem = new ToolStripMenuItem("Start with Windows");
+            CheckboxAutoStartMenuItem.CheckOnClick = true;
+            CheckboxAutoStartMenuItem.CheckedChanged += (_, _) =>
             {
                 Utilities.AutoStartup();
                 Config.Instance.SaveConfig();
             };
-            contextMenu.Items.Add(_checkboxAutoStartMenuItem);
+            contextMenu.Items.Add(CheckboxAutoStartMenuItem);
 
 
             // show hide console option
-            _checkboxShowConsoleMenuItem = new ToolStripMenuItem("Show Console", AppResources.ConsoleImage);
-            _checkboxShowConsoleMenuItem.CheckOnClick = true;
-            _checkboxShowConsoleMenuItem.CheckedChanged += (_, _) =>
+            CheckBoxShowConsoleMenuItem = new ToolStripMenuItem("Show Console", AppResources.ConsoleImage);
+            CheckBoxShowConsoleMenuItem.CheckOnClick = true;
+            CheckBoxShowConsoleMenuItem.CheckedChanged += (_, _) =>
             {
-                ConsoleManager.ToggleConsole(_checkboxShowConsoleMenuItem);
+                ConsoleManager.ToggleConsole(CheckBoxShowConsoleMenuItem);
             };
-            contextMenu.Items.Add(_checkboxShowConsoleMenuItem);
+            contextMenu.Items.Add(CheckBoxShowConsoleMenuItem);
             
-            _restartAppMenuItem = new ToolStripMenuItem("Restart");
-            _restartAppMenuItem.Click += (_, _) => { Utilities.RestartApp(); };
-            contextMenu.Items.Add(_restartAppMenuItem);
+            RestartAppMenuItem = new ToolStripMenuItem("Restart");
+            RestartAppMenuItem.Click += (_, _) => { Utilities.RestartApp(); };
+            contextMenu.Items.Add(RestartAppMenuItem);
             
             contextMenu.Items.Add("Exit", AppResources.NotifyImage, (_, _) => { Application.Exit(); });
             
-            _trayIcon.ContextMenuStrip = contextMenu;
+            NotifyIcon.ContextMenuStrip = contextMenu;
             Logger.Information("Tray icon built.");
         }
         
-        public void SetConState(bool isConnected)
+        public static void SetConState(bool isConnected)
         {
             Logger.Information("Setting connection state to {connection}.", isConnected);
-            if (_connectionStatusItem != null) _connectionStatusItem.Image = CreateStatusIconImage(isConnected);
+            if (ConnectionStatusItem != null) ConnectionStatusItem.Image = CreateStatusIconImage(isConnected);
         }
 
-        private Image CreateStatusIconImage(bool isConnected)
+        private static Image CreateStatusIconImage(bool isConnected)
         {
-            int size = 16;
+            int size = 256;
             var bitmap = new Bitmap(size, size);
             using var g = Graphics.FromImage(bitmap);
             g.Clear(Color.Transparent);

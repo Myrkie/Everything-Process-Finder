@@ -19,9 +19,7 @@ namespace Everything_Process_Finder.Forms
             BackColor = Config.Instance.Highlighter.HighlightColor;
             Opacity = 0.5;
             Enabled = false;
-
-            int exStyle = (int)GetWindowLong(Handle, GwlExstyle);
-            exStyle |= WsExTransparent | WsExLayered;
+            var exStyle = WsExTransparent | WsExLayered;
             SetWindowLong(Handle, GwlExstyle, exStyle);
 
             var cornerPreference = DwmWindowCornerPreference.DwmwcpRound;
@@ -82,9 +80,6 @@ namespace Everything_Process_Finder.Forms
 
         [DllImport("user32.dll")]
         private static extern bool GetWindowRect(IntPtr hWnd, out Rect lpRect);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr GetWindowLong(IntPtr hWnd, int nIndex);
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern IntPtr SetWindowLong(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
