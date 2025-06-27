@@ -12,6 +12,8 @@
         <Authors>Myrkur</Authors>
         <Version>1.1.2</Version>
         <ApplicationIcon>res\Icon.ico</ApplicationIcon>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <EnableRuntimeMarshalling>true</EnableRuntimeMarshalling>
     </PropertyGroup>
 
 
