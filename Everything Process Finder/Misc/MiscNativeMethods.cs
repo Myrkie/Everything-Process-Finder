@@ -1,38 +1,43 @@
 ﻿using System.Runtime.InteropServices;
-using System.Text;
 using Serilog;
 
 // ReSharper disable IdentifierTypo
 namespace Everything_Process_Finder.Misc
 { 
-    public static class MiscNativeMethods
+    public static partial class MiscNativeMethods
     {
         private static readonly ILogger Logger = Log.ForContext(typeof(MiscNativeMethods));
 
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern IntPtr FindWindow(string lpClassName, string? lpWindowName);
+        [LibraryImport("user32.dll", EntryPoint = "FindWindowW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+        private static partial IntPtr FindWindowW(string lpClassName, string? lpWindowName);
 
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass,
+        [LibraryImport("user32.dll", EntryPoint = "FindWindowExW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+        private static partial IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass,
             string? lpszWindow);
 
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+        [LibraryImport("user32.dll", EntryPoint = "GetWindowThreadProcessId", SetLastError = true)]
+        private static partial void GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, uint dwProcessId);
+        [LibraryImport("kernel32.dll", EntryPoint = "OpenProcess", SetLastError = true)]
+        private static partial IntPtr OpenProcess(uint dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, uint dwProcessId);
 
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool CloseHandle(IntPtr hObject);
+        [LibraryImport("kernel32.dll", EntryPoint = "CloseHandle", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static partial void CloseHandle(IntPtr hObject);
 
-        const uint ProcessQueryLimitedInformation = 0x1000;
+        private const uint WmProcessQueryLimitedInformation = 0x1000;
 
-        [DllImport("user32.dll", SetLastError = true)]
-        internal static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+        [LibraryImport("user32.dll", EntryPoint = "SetParent", SetLastError = true)]
+        internal static partial void SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
 
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        static extern bool QueryFullProcessImageName(IntPtr hProcess, int dwFlags, StringBuilder lpExeName,
+        [LibraryImport("kernel32.dll", EntryPoint = "QueryFullProcessImageNameW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static partial bool QueryFullProcessImageNameW(
+            IntPtr hProcess,
+            int dwFlags,
+            Span<char> lpExeName,
             ref int lpdwSize);
+
 
         public static string GetProcessPathByWindowHandle(IntPtr hWnd)
         {
@@ -49,7 +54,7 @@ namespace Everything_Process_Finder.Misc
                 throw new InvalidOperationException("Failed to get process ID from window handle.");
             }
 
-            IntPtr hProcess = OpenProcess(ProcessQueryLimitedInformation, false, processId);
+            IntPtr hProcess = OpenProcess(WmProcessQueryLimitedInformation, false, processId);
             if (hProcess == IntPtr.Zero)
             {
                 Logger.Error("Open process failed");
@@ -59,11 +64,12 @@ namespace Everything_Process_Finder.Misc
             try
             {
                 const int maxPath = 260;
-                StringBuilder buffer = new StringBuilder(maxPath);
-                int size = buffer.Capacity;
+                Span<char> buffer = stackalloc char[maxPath];
+                int size = buffer.Length;
 
-                bool success = QueryFullProcessImageName(hProcess, 0, buffer, ref size);
-                if (success) return buffer.ToString(0, size);
+                bool success = QueryFullProcessImageNameW(hProcess, 0, buffer, ref size);
+                if (success)
+                    return new string(buffer.Slice(0, size));
                 Logger.Error("QueryFullProcessImageName failed");
                 throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
             }
@@ -78,14 +84,14 @@ namespace Everything_Process_Finder.Misc
         private static bool _lastAlphaInstance;
         public static (IntPtr, bool) FindEverythingWindowHandle()
         {
-            var handle = FindWindow("EVERYTHING", null);
+            var handle = FindWindowW("EVERYTHING", null);
 
             if (handle != IntPtr.Zero)
             {
                 _lastAlphaInstance = false;
                 return (handle, _lastAlphaInstance);
             }
-            handle = FindWindow("EVERYTHING_(1.5a)", null);
+            handle = FindWindowW("EVERYTHING_(1.5a)", null);
             if (handle != IntPtr.Zero)
             {
                 _lastAlphaInstance = true;

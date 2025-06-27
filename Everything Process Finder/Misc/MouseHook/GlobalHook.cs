@@ -7,7 +7,7 @@ namespace Everything_Process_Finder.Misc.MouseHook
     /// <summary>
     /// Abstract base class for Mouse hooks
     /// </summary>
-    public abstract class GlobalHook
+    public abstract partial class GlobalHook
     {
         #region Windows API Code
 
@@ -29,22 +29,22 @@ namespace Everything_Process_Finder.Misc.MouseHook
             public IntPtr dwExtraInfo;
         }
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto,
-           CallingConvention = CallingConvention.StdCall, SetLastError = true)]
-        protected static extern int SetWindowsHookEx(
+        [LibraryImport("user32.dll", EntryPoint = "SetWindowsHookExW", SetLastError = true)]
+        [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvStdcall)])]
+        protected static partial int SetWindowsHookExW(
             int idHook,
             HookProc? lpfn,
             IntPtr hMod,
             int dwThreadId);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto,
-            CallingConvention = CallingConvention.StdCall, SetLastError = true)]
-        private static extern int UnhookWindowsHookEx(int idHook);
+        [LibraryImport("user32.dll", EntryPoint = "UnhookWindowsHookEx", SetLastError = true)]
+        [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvStdcall)])]
+        private static partial void UnhookWindowsHookEx(int idHook);
 
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto,
-             CallingConvention = CallingConvention.StdCall)]
-        protected static extern int CallNextHookEx(
+        [LibraryImport("user32.dll", EntryPoint = "CallNextHookEx")]
+        [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvStdcall)])]
+        protected static partial int CallNextHookEx(
             int idHook,
             int nCode,
             int wParam,
@@ -96,10 +96,10 @@ namespace Everything_Process_Finder.Misc.MouseHook
             // If not, GC randomly collects it, and a NullReference exception is thrown
             HookCallback = HookCallbackProcedure;
 
-            HandleToHook = SetWindowsHookEx(HookType, HookCallback, IntPtr.Zero, 0);
+            HandleToHook = SetWindowsHookExW(HookType, HookCallback, IntPtr.Zero, 0);
 
 
-            // Were we able to sucessfully start hook?
+            // Were we able to successfully start hook?
             if (HandleToHook != 0)
             {
                 IsStarted = true;

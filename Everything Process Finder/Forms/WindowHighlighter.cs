@@ -6,7 +6,7 @@ using Serilog;
 // ReSharper disable IdentifierTypo
 namespace Everything_Process_Finder.Forms
 { 
-    public sealed class WindowHighlighter : Form
+    public sealed partial class WindowHighlighter : Form
     {
         private static readonly ILogger Logger = Log.ForContext<WindowHighlighter>();
 
@@ -19,8 +19,8 @@ namespace Everything_Process_Finder.Forms
             BackColor = Config.Instance.Highlighter.HighlightColor;
             Opacity = 0.5;
             Enabled = false;
-            var exStyle = WsExTransparent | WsExLayered;
-            SetWindowLong(Handle, GwlExstyle, exStyle);
+            var exStyle = WmWsExTransparent | WmWsExLayered;
+            SetWindowLongPtrW(Handle, WmGwlExstyle, exStyle);
 
             var cornerPreference = DwmWindowCornerPreference.DwmwcpRound;
             DwmSetWindowAttribute(Handle, Dwmwindowattribute.DwmwaWindowCornerPreference, ref cornerPreference, sizeof(uint));
@@ -49,15 +49,15 @@ namespace Everything_Process_Finder.Forms
 
         // --- Win32 API Imports and Constants ---
         
-        [DllImport("dwmapi.dll")]
-        private static extern int DwmGetWindowAttribute(
+        [LibraryImport("dwmapi.dll", EntryPoint = "DwmGetWindowAttribute")]
+        private static partial int DwmGetWindowAttribute(
             IntPtr hwnd,
             Dwmwindowattribute dwAttribute,
             out Rect pvAttribute,
             int cbAttribute);
         
-        [DllImport("dwmapi.dll")]
-        private static extern void DwmSetWindowAttribute(IntPtr hwnd,
+        [LibraryImport("dwmapi.dll", EntryPoint = "DwmSetWindowAttribute")]
+        private static partial void DwmSetWindowAttribute(IntPtr hwnd,
             Dwmwindowattribute attribute,
             ref DwmWindowCornerPreference pvAttribute,
             uint cbAttribute);
@@ -78,15 +78,16 @@ namespace Everything_Process_Finder.Forms
             DwmwcpRoundsmall   = 3
         }
 
-        [DllImport("user32.dll")]
-        private static extern bool GetWindowRect(IntPtr hWnd, out Rect lpRect);
+        [LibraryImport("user32.dll", EntryPoint = "GetWindowRect")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static partial bool GetWindowRect(IntPtr hWnd, out Rect lpRect);
 
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr SetWindowLong(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+        [LibraryImport("user32.dll", EntryPoint = "SetWindowLongPtrW", SetLastError = true)]
+        private static partial void SetWindowLongPtrW(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
-        private const int GwlExstyle = -20;
-        private const int WsExTransparent = 0x00000020;
-        private const int WsExLayered = 0x00080000;
+        private const int WmGwlExstyle = -20;
+        private const int WmWsExTransparent = 0x00000020;
+        private const int WmWsExLayered = 0x00080000;
 
         private struct Rect
         {

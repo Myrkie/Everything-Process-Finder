@@ -5,7 +5,7 @@ using Serilog;
 
 namespace Everything_Process_Finder.Forms
 {
-    public sealed class FindWindowButton : Button
+    public sealed partial class FindWindowButton : Button
     {
         private static readonly ILogger Logger = Log.ForContext<FindWindowButton>();
 
@@ -96,23 +96,32 @@ namespace Everything_Process_Finder.Forms
 
         // --- Win32 API Imports and Constants ---
 
-        [DllImport("user32.dll")]
-        private static extern IntPtr WindowFromPoint(Point pt);
+        [LibraryImport("user32.dll", EntryPoint = "WindowFromPoint")]
+        private static partial IntPtr WindowFromPoint(Point pt);
 
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern int GetWindowText(IntPtr hWnd, System.Text.StringBuilder lpString, int nMaxCount);
+        [LibraryImport("user32.dll", EntryPoint = "GetWindowTextW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+        private static partial int GetWindowTextW(IntPtr hWnd, Span<char> lpString, int nMaxCount);
 
         private static string GetWindowText(IntPtr hWnd)
         {
-            const int nChars = 256;
-            var buff = new System.Text.StringBuilder(nChars);
-            GetWindowText(hWnd, buff, nChars);
-            return buff.ToString();
+            Span<char> buffer = stackalloc char[256];
+            var charsCopied = GetWindowTextW(hWnd, buffer, buffer.Length);
+
+            return new string(buffer.Slice(0, charsCopied));
         }
+
         private static IntPtr GetWindowHandleUnderCursor()
         {
-            Point pos = Cursor.Position;
-            return WindowFromPoint(pos);
+            return WindowFromPoint(Cursor.Position);
+        }
+        
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Point
+        {
+            public int X;
+            public int Y;
+            public static implicit operator Point(System.Drawing.Point p) => new() { X = p.X, Y = p.Y };
+            public static implicit operator System.Drawing.Point(Point p) => new(p.X, p.Y);
         }
     }
 }

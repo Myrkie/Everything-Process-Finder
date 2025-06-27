@@ -4,7 +4,7 @@ using Serilog;
 
 namespace Everything_Process_Finder.Misc
 {
-    public static class ConsoleManager
+    public static partial class ConsoleManager
     {
         private static readonly ILogger Logger = Log.ForContext(typeof(ConsoleManager));
         
@@ -47,37 +47,40 @@ namespace Everything_Process_Finder.Misc
         
         private static void EnableAnsiSupport()
         {
-            var handle = GetStdHandle(StdOutputHandle);
+            var handle = GetStdHandle(WmStdOutputHandle);
             if (!GetConsoleMode(handle, out var mode)) return;
-            mode |= EnableVirtualTerminalProcessing;
+            mode |= WmEnableVirtualTerminalProcessing;
             SetConsoleMode(handle, mode);
         }
         
         // --- Win32 API Imports and Constants ---
         
-        [DllImport("kernel32.dll")]
-        private static extern int AllocConsole();
+        [LibraryImport("kernel32.dll", EntryPoint = "AllocConsole")]
+        private static partial void AllocConsole();
         
-        [DllImport("kernel32.dll")]
-        private static extern bool FreeConsole();
-
-        [DllImport("user32.dll")]
+        [LibraryImport("kernel32.dll", EntryPoint = "FreeConsole")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool SetForegroundWindow(IntPtr hWnd);
+        private static partial void FreeConsole();
 
-        [DllImport("kernel32.dll")]
-        private static extern IntPtr GetConsoleWindow();
+        [LibraryImport("user32.dll", EntryPoint = "SetForegroundWindow")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static partial void SetForegroundWindow(IntPtr hWnd);
+
+        [LibraryImport("kernel32.dll", EntryPoint = "GetConsoleWindow")]
+        private static partial IntPtr GetConsoleWindow();
         
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
+        [LibraryImport("kernel32.dll", EntryPoint = "GetConsoleMode", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static partial bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
 
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
+        [LibraryImport("kernel32.dll", EntryPoint = "SetConsoleMode", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static partial void SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
 
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern IntPtr GetStdHandle(int nStdHandle);
+        [LibraryImport("kernel32.dll", EntryPoint = "GetStdHandle", SetLastError = true)]
+        private static partial IntPtr GetStdHandle(int nStdHandle);
 
-        private const int StdOutputHandle = -11;
-        private const uint EnableVirtualTerminalProcessing = 0x0004;
+        private const int WmStdOutputHandle = -11;
+        private const uint WmEnableVirtualTerminalProcessing = 0x0004;
     }
 }
