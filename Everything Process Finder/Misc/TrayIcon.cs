@@ -37,12 +37,15 @@ namespace Everything_Process_Finder.Misc
 
 
             // auto start
-            CheckboxAutoStartMenuItem = new ToolStripMenuItem("Start with Windows");
-            CheckboxAutoStartMenuItem.CheckOnClick = true;
+            CheckboxAutoStartMenuItem = new ToolStripMenuItem("Start with Windows")
+            {
+                Checked = Config.Instance.RunOnStartup,
+                CheckOnClick = true
+            };
             CheckboxAutoStartMenuItem.CheckedChanged += (_, _) =>
             {
+                Config.Instance.RunOnStartup = CheckboxAutoStartMenuItem.Checked;
                 Utilities.AutoStartup();
-                Config.Instance.SaveConfig();
             };
             contextMenu.Items.Add(CheckboxAutoStartMenuItem);
 
@@ -66,7 +69,7 @@ namespace Everything_Process_Finder.Misc
             Logger.Information("Tray icon built.");
         }
         
-        public static void SetConState(bool isConnected)
+        public void SetConState(bool isConnected)
         {
             Logger.Information("Setting connection state to {connection}.", isConnected);
             if (ConnectionStatusItem != null) ConnectionStatusItem.Image = CreateStatusIconImage(isConnected);

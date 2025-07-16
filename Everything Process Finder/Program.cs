@@ -35,6 +35,8 @@ namespace Everything_Process_Finder
 
             Utilities.AutoStartup();
 
+            var trayIcon = new TrayIcon();
+
             var findButton = new FindWindowButton
             {
                 Left = 400,
@@ -47,10 +49,10 @@ namespace Everything_Process_Finder
             // Start polling for Void Tools Everything window
             MonitorEverythingWindow.EverythingWindowFound += (_, hEverything) =>
             {
-                TrayIcon.SetConState(true);
+                trayIcon.SetConState(true);
                 _assemble(hEverything, findButton.Handle);
             };
-            MonitorEverythingWindow.EverythingWindowClosed += (_, _) => { TrayIcon.SetConState(false); };
+            MonitorEverythingWindow.EverythingWindowClosed += (_, _) => { trayIcon.SetConState(false); };
 
             MonitorEverythingWindow.Init();
 

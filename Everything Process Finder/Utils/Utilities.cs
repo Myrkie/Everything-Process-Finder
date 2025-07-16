@@ -20,23 +20,21 @@ namespace Everything_Process_Finder.Utils
                 RegistryKey? rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
                 if (Config.Instance.RunOnStartup)
                 {
-                    if (TrayIcon.CheckboxAutoStartMenuItem != null) TrayIcon.CheckboxAutoStartMenuItem.Checked = true;
-                    Config.Instance.RunOnStartup = true;
                     rk?.SetValue(AppName, Application.ExecutablePath);
                 }
                 else
                 {
-                    if (TrayIcon.CheckboxAutoStartMenuItem != null) TrayIcon.CheckboxAutoStartMenuItem.Checked = false;
-                    Config.Instance.RunOnStartup = false;
                     rk?.DeleteValue(AppName, false);
                 }
+                Config.Instance.SaveConfig();
             }
             catch (Exception exception)
             {
-                Logger.Error("An error has occured {ex}", exception);
+                Logger.Error("An error has occurred {ex}", exception);
                 throw;
             }
         }
+
 
         // ReSharper disable once NotAccessedField.Local
         private static Mutex _mutex = null!;
