@@ -45,7 +45,7 @@ namespace Everything_Process_Finder.Misc
             CheckboxAutoStartMenuItem.CheckedChanged += (_, _) =>
             {
                 Config.Instance.RunOnStartup = CheckboxAutoStartMenuItem.Checked;
-                Utilities.AutoStartup();
+                Utilities.RegisterAutoStart();
             };
             contextMenu.Items.Add(CheckboxAutoStartMenuItem);
 

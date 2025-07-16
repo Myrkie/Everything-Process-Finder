@@ -59,11 +59,9 @@ namespace Everything_Process_Finder.Misc
         private static partial void AllocConsole();
         
         [LibraryImport("kernel32.dll", EntryPoint = "FreeConsole")]
-        [return: MarshalAs(UnmanagedType.Bool)]
         private static partial void FreeConsole();
 
         [LibraryImport("user32.dll", EntryPoint = "SetForegroundWindow")]
-        [return: MarshalAs(UnmanagedType.Bool)]
         private static partial void SetForegroundWindow(IntPtr hWnd);
 
         [LibraryImport("kernel32.dll", EntryPoint = "GetConsoleWindow")]
@@ -74,7 +72,6 @@ namespace Everything_Process_Finder.Misc
         private static partial bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
 
         [LibraryImport("kernel32.dll", EntryPoint = "SetConsoleMode", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
         private static partial void SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
 
         [LibraryImport("kernel32.dll", EntryPoint = "GetStdHandle", SetLastError = true)]

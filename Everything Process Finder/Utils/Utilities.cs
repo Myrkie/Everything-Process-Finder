@@ -13,17 +13,19 @@ namespace Everything_Process_Finder.Utils
         private static readonly ILogger Logger = Log.ForContext(typeof(Utilities));
         internal const string AppName = "Everything Process Finder";
 
-        internal static void AutoStartup()
+        internal static void RegisterAutoStart()
         {
             try
             {
                 RegistryKey? rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
                 if (Config.Instance.RunOnStartup)
                 {
+                    Logger.Information("Autostart is enabled.");
                     rk?.SetValue(AppName, Application.ExecutablePath);
                 }
                 else
                 {
+                    Logger.Information("Autostart is disabled.");
                     rk?.DeleteValue(AppName, false);
                 }
                 Config.Instance.SaveConfig();

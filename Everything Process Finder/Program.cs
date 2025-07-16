@@ -33,7 +33,7 @@ namespace Everything_Process_Finder
             AppResources.LoadResources();
             Utilities.SingleInstanceCheck();
 
-            Utilities.AutoStartup();
+            Utilities.RegisterAutoStart();
 
             var trayIcon = new TrayIcon();
 
@@ -46,28 +46,18 @@ namespace Everything_Process_Finder
             };
             findButton.WindowFound += Utilities.QueryEverything;
 
-            // Start polling for Void Tools Everything window
             MonitorEverythingWindow.EverythingWindowFound += (_, hEverything) =>
             {
                 trayIcon.SetConState(true);
-                _assemble(hEverything, findButton.Handle);
+                
+                MiscNativeMethods.SetParent(findButton.Handle, hEverything);
             };
             MonitorEverythingWindow.EverythingWindowClosed += (_, _) => { trayIcon.SetConState(false); };
+            AppDomain.CurrentDomain.ProcessExit += (_, _) => MonitorEverythingWindow.Dispose();
 
             MonitorEverythingWindow.Init();
 
             Application.Run();
-        }
-
-        private static void _assemble(IntPtr hEverything, IntPtr findButtonHandle)
-        {
-            Logger.Information("Attaching button to Everything's toolbar.");
-
-            var hToolbar = MiscNativeMethods.FindEverythingToolbar(hEverything);
-            if (hToolbar == IntPtr.Zero) return;
-            
-            Logger.Information("Attached button to Everything's toolbar.");
-            MiscNativeMethods.SetParent(findButtonHandle, hToolbar);
         }
     }
 }
