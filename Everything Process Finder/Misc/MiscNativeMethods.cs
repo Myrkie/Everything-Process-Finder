@@ -11,9 +11,6 @@ namespace Everything_Process_Finder.Misc
         [LibraryImport("user32.dll", EntryPoint = "FindWindowW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         internal static partial IntPtr FindWindowW(string lpClassName, string? lpWindowName);
 
-        [LibraryImport("user32.dll", EntryPoint = "FindWindowExW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
-        private static partial IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string? lpszWindow);
-
         [LibraryImport("user32.dll", EntryPoint = "GetWindowThreadProcessId", SetLastError = true)]
         private static partial void GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
@@ -31,12 +28,6 @@ namespace Everything_Process_Finder.Misc
         [LibraryImport("kernel32.dll", EntryPoint = "QueryFullProcessImageNameW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static partial bool QueryFullProcessImageNameW(IntPtr hProcess, int dwFlags, Span<char> lpExeName, ref int lpdwSize);
-
-        
-        [LibraryImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static partial bool IsWindow(IntPtr hWnd);
-
         
         [LibraryImport("user32.dll", EntryPoint = "SetWinEventHook", SetLastError = true)]
         public static partial IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
@@ -101,43 +92,20 @@ namespace Everything_Process_Finder.Misc
             }
         }
         
-        public static IntPtr FindEverythingToolbar(IntPtr hEverything)
+        [LibraryImport("user32.dll", EntryPoint = "GetDpiForWindow")]
+        private static partial uint GetDpiForWindow(IntPtr hWnd);
+
+        public static float GetWindowScaleFactor(IntPtr hWnd)
         {
-            const int maxRetries = 10;
-            const int retryDelayMs = 100;
-            const int requiredStableCount = 2;
-
-            IntPtr previousHandle = IntPtr.Zero;
-            int stableCounter = 0;
-
-            for (int i = 0; i < maxRetries; i++)
+            try
             {
-                IntPtr hToolbar = FindWindowEx(hEverything, IntPtr.Zero,"EVERYTHING_MENUBAR", null);
-
-                if (hToolbar != IntPtr.Zero && IsWindow(hToolbar))
-                {
-                    if (hToolbar == previousHandle)
-                    {
-                        stableCounter++;
-                        if (stableCounter >= requiredStableCount)
-                            return hToolbar;
-                    }
-                    else
-                    {
-                        previousHandle = hToolbar;
-                        stableCounter = 1;
-                    }
-                }
-                else
-                {
-                    previousHandle = IntPtr.Zero;
-                    stableCounter = 0;
-                }
-                Thread.Sleep(retryDelayMs);
+                uint dpi = GetDpiForWindow(hWnd);
+                return dpi / 96f; // 96 DPI = 100%
             }
-
-            Logger.Error("Failed to find a stable EVERYTHING_MENUBAR control.");
-            return IntPtr.Zero;
+            catch
+            {
+                return 1.0f;
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Security.Principal;
 using Everything_Process_Finder.Configuration;
 using Everything_Process_Finder.Misc;
@@ -120,7 +121,13 @@ namespace Everything_Process_Finder.Utils
             Process.Start(new ProcessStartInfo(uri) { UseShellExecute = true });
             Logger.Information("Search sent to Everything UI via es: protocol.");
         }
-
+        
+        public static float GetSystemScaleFactor()
+        {
+            var g = Graphics.FromHwnd(IntPtr.Zero);
+            return g.DpiX / 96f;
+        }
+        
         internal static void EnsureElevatedPrivileges()
         {
             if (Debugger.IsAttached)

@@ -9,6 +9,11 @@ namespace Everything_Process_Finder
     {
         private static readonly ILogger Logger = Log.ForContext<Program>();
 
+        private const int WmBaseLeft = 400;
+        private const int WmBaseTop = 0;
+        private const int WmBaseWidth = 22;
+        private const int WmBaseHeight = 22;
+        
         [STAThread]
         static void Main()
         {
@@ -37,21 +42,32 @@ namespace Everything_Process_Finder
 
             var trayIcon = new TrayIcon();
 
+            var scale = Utilities.GetSystemScaleFactor();
             var findButton = new FindWindowButton
             {
-                Left = 400,
-                Top = 0,
-                Width = 22,
-                Height = 22,
+                Top = (int)(WmBaseTop * scale),
+                Left = (int)(WmBaseLeft * scale),
+                Width = (int)(WmBaseWidth * scale),
+                Height = (int)(WmBaseHeight * scale),
             };
+
+
             findButton.WindowFound += Utilities.QueryEverything;
 
             MonitorEverythingWindow.EverythingWindowFound += (_, hEverything) =>
             {
                 trayIcon.SetConState(true);
-                
+
+                var windowScaleFactor = MiscNativeMethods.GetWindowScaleFactor(hEverything);
+
+                findButton.Top = (int)(WmBaseTop * windowScaleFactor);
+                findButton.Left = (int)(WmBaseLeft * windowScaleFactor);
+                findButton.Width = (int)(WmBaseWidth * windowScaleFactor);
+                findButton.Height = (int)(WmBaseHeight * windowScaleFactor);
+
                 MiscNativeMethods.SetParent(findButton.Handle, hEverything);
             };
+
             MonitorEverythingWindow.EverythingWindowClosed += (_, _) => { trayIcon.SetConState(false); };
             AppDomain.CurrentDomain.ProcessExit += (_, _) => MonitorEverythingWindow.Dispose();
 
