@@ -16,7 +16,7 @@ namespace Everything_Process_Finder.Misc
 
         [LibraryImport("kernel32.dll", EntryPoint = "OpenProcess", SetLastError = true)]
         private static partial IntPtr OpenProcess(uint dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, uint dwProcessId);
-
+        
         [LibraryImport("kernel32.dll", EntryPoint = "CloseHandle", SetLastError = true)]
         private static partial void CloseHandle(IntPtr hObject);
 

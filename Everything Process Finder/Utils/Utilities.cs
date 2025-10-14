@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Security.Principal;
 using Everything_Process_Finder.Configuration;
 using Everything_Process_Finder.Misc;
@@ -56,7 +55,7 @@ namespace Everything_Process_Finder.Utils
         public static void FocusEverything()
         {
             string uri = "es:";
-            Process.Start(new ProcessStartInfo(uri) { UseShellExecute = true });
+            ProcessHelper.StartAsStandardUser(uri);
             Logger.Information("Everything window focused.");
         }
 
