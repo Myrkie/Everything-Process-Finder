@@ -72,16 +72,10 @@ namespace Everything_Process_Finder.Misc
         }
 
         // --- Win32 imports ---
-        [LibraryImport("user32.dll")]
+        [LibraryImport("user32.dll", EntryPoint = "GetShellWindow")]
         private static partial IntPtr GetShellWindow();
 
-        [LibraryImport("user32.dll")]
-        private static partial void GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
-
-        [LibraryImport("kernel32.dll", SetLastError = true)]
-        private static partial IntPtr OpenProcess(uint dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, uint dwProcessId);
-
-        [LibraryImport("advapi32.dll", SetLastError = true)]
+        [LibraryImport("advapi32.dll", EntryPoint = "OpenProcessToken", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static partial bool OpenProcessToken(IntPtr processHandle, TokenAccess desiredAccess, out IntPtr tokenHandle);
 
@@ -108,7 +102,7 @@ namespace Everything_Process_Finder.Misc
             ref StartupInfo lpStartupInfo,
             out ProcessInformation lpProcessInformation);
 
-        [LibraryImport("kernel32.dll", SetLastError = true)]
+        [LibraryImport("kernel32.dll", EntryPoint = "CloseHandle", SetLastError = true)]
         private static partial int CloseHandle(IntPtr handle);
 
         public static void StartAsStandardUser(string target, string? arguments = null)
@@ -117,11 +111,11 @@ namespace Everything_Process_Finder.Misc
             if (shellWindow == IntPtr.Zero)
                 throw new InvalidOperationException("Cannot find the shell window");
 
-            GetWindowThreadProcessId(shellWindow, out var explorerPid);
+            MiscNativeMethods.GetWindowThreadProcessId(shellWindow, out var explorerPid);
             if (explorerPid == 0)
                 throw new InvalidOperationException("Failed to get Explorer process ID.");
 
-            IntPtr hProcessRaw = OpenProcess(WmProcessQueryLimitedInformation, false, explorerPid);
+            IntPtr hProcessRaw = MiscNativeMethods.OpenProcess(WmProcessQueryLimitedInformation, false, explorerPid);
             using SafeProcessHandle hProcess = new(hProcessRaw);
             if (hProcess.IsInvalid)
                 throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to open Explorer process.");
@@ -151,7 +145,13 @@ namespace Everything_Process_Finder.Misc
             StartupInfo si = new() { cb = Marshal.SizeOf<StartupInfo>() };
             string cmdLine = arguments is { Length: > 0 } ? $"explorer.exe \"{target}\" {arguments}" : $"explorer.exe \"{target}\"";
 
-            if (!CreateProcessWithTokenW(hUserToken.DangerousGetHandle(), 0, null, cmdLine, WmCreateNewConsole, IntPtr.Zero, null, ref si, out var pi))
+            if (!CreateProcessWithTokenW(hUserToken.DangerousGetHandle(), 
+                    0, 
+                    null, cmdLine, 
+                    WmCreateNewConsole, 
+                    IntPtr.Zero, 
+                    null, 
+                    ref si, out var pi))
                 throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to start process with token.");
 
             Logger.Information("Started '{Target}' as standard user (PID={Pid})", target, pi.dwProcessId);

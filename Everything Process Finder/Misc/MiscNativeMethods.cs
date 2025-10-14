@@ -12,10 +12,10 @@ namespace Everything_Process_Finder.Misc
         internal static partial IntPtr FindWindowW(string lpClassName, string? lpWindowName);
 
         [LibraryImport("user32.dll", EntryPoint = "GetWindowThreadProcessId", SetLastError = true)]
-        private static partial void GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+        internal static partial void GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
         [LibraryImport("kernel32.dll", EntryPoint = "OpenProcess", SetLastError = true)]
-        private static partial IntPtr OpenProcess(uint dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, uint dwProcessId);
+        internal static partial IntPtr OpenProcess(uint dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, uint dwProcessId);
         
         [LibraryImport("kernel32.dll", EntryPoint = "CloseHandle", SetLastError = true)]
         private static partial void CloseHandle(IntPtr hObject);
