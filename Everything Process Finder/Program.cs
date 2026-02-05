@@ -7,8 +7,6 @@ namespace Everything_Process_Finder
 {
     class Program
     {
-        private static readonly ILogger Logger = Log.ForContext<Program>();
-
         private const int WmBaseLeft = 400;
         private const int WmBaseTop = 0;
         private const int WmBaseWidth = 22;

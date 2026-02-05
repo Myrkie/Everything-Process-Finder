@@ -2,6 +2,19 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Everything Process Finder", "Everything Process Finder\Everything Process Finder.csproj", "{90C239E9-EA16-45E0-878E-568D01439131}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{B75A39AC-45AF-4135-B81A-A79D7089D872}"
+	ProjectSection(SolutionItems) = preProject
+		build.bat = build.bat
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Builds", "Builds", "{3AE52547-C9C3-46C0-BB76-50DF29F55F58}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Windows", "Windows", "{C3CC4BD6-4B67-4B35-97E9-A2AF214BB44A}"
+	ProjectSection(SolutionItems) = preProject
+		Builds\Windows\Everything-Process-Finder-X64Rls.exe = Builds\Windows\Everything-Process-Finder-X64Rls.exe
+		Builds\Windows\Everything-Process-Finder-X64Rls.pdb = Builds\Windows\Everything-Process-Finder-X64Rls.pdb
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +25,9 @@ Global
 		{90C239E9-EA16-45E0-878E-568D01439131}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90C239E9-EA16-45E0-878E-568D01439131}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90C239E9-EA16-45E0-878E-568D01439131}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3AE52547-C9C3-46C0-BB76-50DF29F55F58} = {B75A39AC-45AF-4135-B81A-A79D7089D872}
+		{C3CC4BD6-4B67-4B35-97E9-A2AF214BB44A} = {3AE52547-C9C3-46C0-BB76-50DF29F55F58}
 	EndGlobalSection
 EndGlobal
