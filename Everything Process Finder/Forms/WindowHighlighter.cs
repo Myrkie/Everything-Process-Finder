@@ -24,7 +24,7 @@ namespace Everything_Process_Finder.Forms
 
             var cornerPreference = DwmWindowCornerPreference.DwmwcpRound;
             DwmSetWindowAttribute(Handle, Dwmwindowattribute.DwmwaWindowCornerPreference, ref cornerPreference, sizeof(uint));
-            Logger.Information("Created Window Highlighter.");
+            Logger.Information("Created Window Highlighter");
         }
 
         public void HighlightWindow(IntPtr hWnd)

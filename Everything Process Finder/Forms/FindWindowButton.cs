@@ -32,7 +32,7 @@ namespace Everything_Process_Finder.Forms
             _mouseHook.MouseUp += StopDrag;
             _mouseHook.Start();
             
-            Logger.Information("Created FindWindowButton.");
+            Logger.Information("Created FindWindowButton");
         }
         
         protected override void OnPaint(PaintEventArgs pe)

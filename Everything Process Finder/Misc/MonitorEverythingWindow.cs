@@ -27,7 +27,7 @@ namespace Everything_Process_Finder.Misc
                 MiscNativeMethods.WineventOutofcontext
             );
 
-            Logger.Information("Window monitor initialized.");
+            Logger.Information("Window monitor initialized");
 
             IntPtr hwnd = MiscNativeMethods.FindWindowW("EVERYTHING", null);
             if (hwnd == IntPtr.Zero)
@@ -76,7 +76,7 @@ namespace Everything_Process_Finder.Misc
             if (_winEventHook == IntPtr.Zero) return;
             MiscNativeMethods.UnhookWinEvent(_winEventHook);
             _winEventHook = IntPtr.Zero;
-            Logger.Information("Window monitor hook disposed.");
+            Logger.Information("Window monitor hook disposed");
         }
     }
 }

@@ -20,12 +20,12 @@ namespace Everything_Process_Finder.Utils
                 RegistryKey? rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
                 if (Config.Instance.RunOnStartup)
                 {
-                    Logger.Information("Autostart is enabled.");
+                    Logger.Information("Autostart is enabled");
                     rk?.SetValue(AppName, Application.ExecutablePath);
                 }
                 else
                 {
-                    Logger.Information("Autostart is disabled.");
+                    Logger.Information("Autostart is disabled");
                     rk?.DeleteValue(AppName, false);
                 }
                 Config.Instance.SaveConfig();
@@ -56,7 +56,7 @@ namespace Everything_Process_Finder.Utils
         {
             string uri = "es:";
             ProcessHelper.StartAsStandardUser(uri);
-            Logger.Information("Everything window focused.");
+            Logger.Information("Everything window focused");
         }
 
         internal static void RestartApp()
@@ -68,7 +68,7 @@ namespace Everything_Process_Finder.Utils
                 FileName = Application.ExecutablePath,
                 Verb = "runas"
             };
-            Logger.Information("Restarting.");
+            Logger.Information("Restarting");
             Process.Start(startInfo);
             Environment.Exit(0);
         }
@@ -81,7 +81,7 @@ namespace Everything_Process_Finder.Utils
             var processPath = MiscNativeMethods.GetProcessPathByWindowHandle(handle);
             var process = Path.GetFileNameWithoutExtension(processPath);
 
-            Logger.Information($"Found window: Handle: {handle} Title: {title} Process: {process}", handle, title, process);
+            Logger.Information("Found window: Handle: {Handle} Title: {Title} Process: {Process}", handle, title, process, handle, title, process);
 
             // weird shit, ternary expressions hurt my head
             Structs.Modifier modifier = shiftPressed
@@ -97,7 +97,7 @@ namespace Everything_Process_Finder.Utils
             {
                 case Structs.Modifier.Shift:
                     targetPath = !string.IsNullOrEmpty(folder) ? folder : processPath;
-                    Logger.Information("Shift: searching by process folder.");
+                    Logger.Information("Shift: searching by process folder");
                     break;
 
                 case Structs.Modifier.Control:
@@ -105,12 +105,12 @@ namespace Everything_Process_Finder.Utils
                         targetPath = folder.EndsWith("\\") ? folder : folder + "\\";
                     else
                         targetPath = processPath + "\\";
-                    Logger.Information("Ctrl held: searching by folder path.");
+                    Logger.Information("Ctrl held: searching by folder path");
                     break;
 
                 default:
                     targetPath = processPath;
-                    Logger.Information("No modifiers: searching by process executable.");
+                    Logger.Information("No modifiers: searching by process executable");
                     break;
             }
 
@@ -118,7 +118,7 @@ namespace Everything_Process_Finder.Utils
             string uri = $"es:{encodedQuery}";
 
             Process.Start(new ProcessStartInfo(uri) { UseShellExecute = true });
-            Logger.Information("Search sent to Everything UI via es: protocol.");
+            Logger.Information("Search sent to Everything UI via es: protocol");
         }
         
         public static float GetSystemScaleFactor()
@@ -131,7 +131,7 @@ namespace Everything_Process_Finder.Utils
         {
             if (Debugger.IsAttached)
             {
-                Logger.Information("Debugger attached, not elevating, selecting elevated processes will fail.");
+                Logger.Information("Debugger attached, not elevating, selecting elevated processes will fail");
                 return;
             }
             var identity = WindowsIdentity.GetCurrent();
@@ -142,10 +142,10 @@ namespace Everything_Process_Finder.Utils
             {
                 UseShellExecute = true,
                 WorkingDirectory = Environment.CurrentDirectory,
-                FileName = Application.ExecutablePath,
+                FileName = Environment.ProcessPath,
                 Verb = "runas"
             };
-            Logger.Information("The application requires elevated privileges.");
+            Logger.Information("The application requires elevated privileges");
 
             Process.Start(startInfo);
             Environment.Exit(0);

@@ -18,7 +18,7 @@ namespace Everything_Process_Finder.Misc
 
         static TrayIcon()
         {
-            Logger.Information("Building tray icon.");
+            Logger.Information("Building tray icon");
             NotifyIcon = AppResources.NotifyIcon;
             if (NotifyIcon == null) return;
             NotifyIcon.DoubleClick += (_, _) => { Utilities.FocusEverything(); };
@@ -66,12 +66,12 @@ namespace Everything_Process_Finder.Misc
             contextMenu.Items.Add("Exit", AppResources.NotifyImage, (_, _) => { Application.Exit(); });
             
             NotifyIcon.ContextMenuStrip = contextMenu;
-            Logger.Information("Tray icon built.");
+            Logger.Information("Tray icon built");
         }
         
         public void SetConState(bool isConnected)
         {
-            Logger.Information("Setting connection state to {connection}.", isConnected);
+            Logger.Information("Setting connection state to {connection}", isConnected);
             if (ConnectionStatusItem != null) ConnectionStatusItem.Image = CreateStatusIconImage(isConnected);
         }
 
