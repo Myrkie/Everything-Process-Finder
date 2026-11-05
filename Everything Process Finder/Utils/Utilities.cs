@@ -17,7 +17,7 @@ namespace Everything_Process_Finder.Utils
         {
             try
             {
-                RegistryKey? rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                RegistryKey? rk = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
                 if (Config.Instance.RunOnStartup)
                 {
                     Logger.Information("Autostart is enabled");
@@ -32,7 +32,7 @@ namespace Everything_Process_Finder.Utils
             }
             catch (Exception exception)
             {
-                Logger.Error("An error has occurred {ex}", exception);
+                Logger.Error(exception, "An error has occurred");
                 throw;
             }
         }
@@ -46,9 +46,9 @@ namespace Everything_Process_Finder.Utils
             Thread.Sleep(2000); // let's wait a bit to let any previous ones close before checking.
             _mutex = new Mutex(true, AppName, out var createdNew);
             if (createdNew) return;
-            var str = AppName + " is already running.";
-            Logger.Information(str);
-            Forms.MessageBox.Show(str, AppName);
+            const string appName = AppName + " is already running";
+            Logger.Information("{AppName}", appName);
+            MessageBox.Show(appName, AppName);
             Environment.Exit(0);
         }
 
@@ -81,7 +81,7 @@ namespace Everything_Process_Finder.Utils
             var processPath = MiscNativeMethods.GetProcessPathByWindowHandle(handle);
             var process = Path.GetFileNameWithoutExtension(processPath);
 
-            Logger.Information("Found window: Handle: {Handle} Title: {Title} Process: {Process}", handle, title, process, handle, title, process);
+            Logger.Information("Found window: Handle: {Handle} Title: {Title} Process: {Process}", handle, title, process);
 
             // weird shit, ternary expressions hurt my head
             Structs.Modifier modifier = shiftPressed
